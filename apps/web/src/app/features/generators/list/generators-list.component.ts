@@ -23,7 +23,7 @@ import { GeneratorsService, Generator } from '../../../core/services/generators.
     <p-toast></p-toast>
     <p-confirmDialog></p-confirmDialog>
     
-    <div class="page-container animate-fade-in p-6">
+    <div class="page-container animate-fade-in" style="padding: 2rem 2.5rem;">
       <!-- Page Header -->
       <div class="page-header">
         <div>
