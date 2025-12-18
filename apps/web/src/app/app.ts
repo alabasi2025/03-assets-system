@@ -18,8 +18,7 @@ import { TooltipModule } from 'primeng/tooltip';
           <div class="logo">
             <i class="pi pi-bolt"></i>
           </div>
-          <h1>نظام الأصول</h1>
-          <span class="subtitle">والصيانة</span>
+          <h1>نظام الأصول والصيانة</h1>
         </div>
         
         <nav class="sidebar-nav">
@@ -152,15 +151,11 @@ import { TooltipModule } from 'primeng/tooltip';
     .logo i { font-size: 1.75rem; color: white; }
     
     .sidebar-header h1 {
-      font-size: 1.25rem;
-      font-weight: 700;
+      font-size: 1.1rem;
+      font-weight: 600;
       margin: 0;
-      letter-spacing: -0.5px;
-    }
-    
-    .subtitle {
-      font-size: 0.85rem;
-      color: rgba(255,255,255,0.6);
+      letter-spacing: 0;
+      white-space: nowrap;
     }
     
     .sidebar-nav {
