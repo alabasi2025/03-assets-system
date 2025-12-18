@@ -4,13 +4,13 @@ import {
   IsUUID, 
   IsInt, 
   IsNumber,
-  IsBoolean, 
+   
   IsDateString,
   IsObject,
   Min, 
   MaxLength 
 } from 'class-validator';
-import { Type, Transform } from 'class-transformer';
+import { Type } from 'class-transformer';
 
 export class CreateAssetDto {
   @IsUUID()

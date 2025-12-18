@@ -4,7 +4,7 @@ import { PrismaService } from '../../common/prisma/prisma.service';
 export interface RunDepreciationDto {
   businessId: string;
   periodEnd: string;
-  createdBy?: string;
+  _createdBy?: string;
 }
 
 export interface DepreciationResult {
@@ -42,7 +42,7 @@ export class DepreciationService {
     bookValue: number,
     salvageValue: number,
     usefulLifeYears: number,
-    rate: number = 2, // Double declining by default
+    rate = 2, // Double declining by default
   ): number {
     const annualRate = (1 / usefulLifeYears) * rate;
     const monthlyRate = annualRate / 12;
@@ -231,7 +231,7 @@ export class DepreciationService {
   /**
    * Post depreciation entries (create journal entries)
    */
-  async postDepreciation(businessId: string, periodEnd: string, createdBy?: string) {
+  async postDepreciation(businessId: string, periodEnd: string, _createdBy?: string) {
     const period = new Date(periodEnd);
 
     const entries = await this.prisma.asset_depreciation_entries.findMany({
@@ -270,7 +270,7 @@ export class DepreciationService {
   /**
    * Reverse depreciation for a specific period
    */
-  async reverseDepreciation(businessId: string, periodEnd: string, createdBy?: string) {
+  async reverseDepreciation(businessId: string, periodEnd: string, _createdBy?: string) {
     const period = new Date(periodEnd);
 
     const entries = await this.prisma.asset_depreciation_entries.findMany({

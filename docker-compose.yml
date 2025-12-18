@@ -1,0 +1,88 @@
+# Assets & Maintenance System - Docker Compose
+# نظام إدارة الأصول والصيانة
+
+version: '3.8'
+
+services:
+  # API Service
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: assets-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=${DATABASE_URL}
+      - CORS_ORIGIN=${CORS_ORIGIN:-*}
+    depends_on:
+      - db
+    networks:
+      - assets-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Web Service
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: assets-web
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    networks:
+      - assets-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # PostgreSQL Database (for local development)
+  db:
+    image: postgres:15-alpine
+    container_name: assets-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-assets}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-assets_password}
+      - POSTGRES_DB=${POSTGRES_DB:-assets_system}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - assets-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-assets}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  assets-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

@@ -158,7 +158,7 @@ export class MaintenancePlansService {
     const end = new Date(endDate);
 
     for (const assetId of assetIds) {
-      let currentDate = new Date(start);
+      const currentDate = new Date(start);
       let scheduleNumber = 1;
 
       while (currentDate <= end) {

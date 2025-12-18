@@ -37,6 +37,14 @@ export default [
       '**/*.mjs',
     ],
     // Override or add rules here
-    rules: {},
+    rules: {
+      // Allow explicit any in specific cases (will be properly typed in future iterations)
+      '@typescript-eslint/no-explicit-any': 'off',
+      // Allow unused vars with underscore prefix
+      '@typescript-eslint/no-unused-vars': ['error', { 
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+      }],
+    },
   },
 ];

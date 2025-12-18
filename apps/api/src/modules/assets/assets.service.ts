@@ -402,7 +402,7 @@ export class AssetsService {
     };
   }
 
-  async softDelete(id: string, deletedBy?: string) {
+  async softDelete(id: string, _deletedBy?: string) {
     const asset = await this.prisma.assets.findUnique({
       where: { id },
     });
