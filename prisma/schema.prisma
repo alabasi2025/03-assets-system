@@ -1,14 +1,444 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// Assets & Maintenance System - Prisma Schema
+// Following strict rules: UUID for PKs, snake_case for tables/columns, asset_ prefix
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+// ═══════════════════════════════════════════════════════════════
+// تصنيفات الأصول
+// ═══════════════════════════════════════════════════════════════
+
+model asset_categories {
+  id                String   @id @default(uuid()) @db.Uuid
+  business_id       String   @db.Uuid
+  parent_id         String?  @db.Uuid
+  code              String   @db.VarChar(50)
+  name              String   @db.VarChar(255)
+  name_en           String?  @db.VarChar(255)
+  description       String?  @db.Text
+  depreciation_method String @default("straight_line") @db.VarChar(50)
+  useful_life_years Int      @default(5)
+  salvage_rate      Decimal  @default(0) @db.Decimal(5, 2)
+  asset_account_id  String?  @db.Uuid
+  depreciation_account_id String? @db.Uuid
+  expense_account_id String? @db.Uuid
+  is_active         Boolean  @default(true)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  parent   asset_categories?  @relation("CategoryHierarchy", fields: [parent_id], references: [id])
+  children asset_categories[] @relation("CategoryHierarchy")
+  assets   assets[]
+
+  @@unique([business_id, code])
+  @@index([business_id])
+  @@index([parent_id])
+  @@map("asset_categories")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// الأصول
+// ═══════════════════════════════════════════════════════════════
+
+model assets {
+  id                String   @id @default(uuid()) @db.Uuid
+  business_id       String   @db.Uuid
+  category_id       String   @db.Uuid
+  asset_number      String   @db.VarChar(50)
+  barcode           String?  @db.VarChar(100)
+  name              String   @db.VarChar(255)
+  name_en           String?  @db.VarChar(255)
+  description       String?  @db.Text
+  
+  // Technical Data
+  manufacturer      String?  @db.VarChar(255)
+  model             String?  @db.VarChar(255)
+  serial_number     String?  @db.VarChar(255)
+  specifications    Json?
+  
+  // Location
+  station_id        String?  @db.Uuid
+  location          String?  @db.VarChar(500)
+  location_lat      Decimal? @db.Decimal(10, 8)
+  location_lng      Decimal? @db.Decimal(11, 8)
+  custodian_id      String?  @db.Uuid
+  
+  // Financial Data
+  acquisition_date  DateTime @db.Date
+  acquisition_cost  Decimal  @db.Decimal(18, 2)
+  acquisition_method String  @default("purchase") @db.VarChar(50)
+  supplier_id       String?  @db.Uuid
+  invoice_number    String?  @db.VarChar(100)
+  
+  // Depreciation
+  depreciation_method String @default("straight_line") @db.VarChar(50)
+  useful_life_years Int      @default(5)
+  salvage_value     Decimal  @default(0) @db.Decimal(18, 2)
+  accumulated_depreciation Decimal @default(0) @db.Decimal(18, 2)
+  book_value        Decimal  @db.Decimal(18, 2)
+  last_depreciation_date DateTime? @db.Date
+  
+  // Warranty
+  warranty_start    DateTime? @db.Date
+  warranty_end      DateTime? @db.Date
+  warranty_provider String?  @db.VarChar(255)
+  warranty_terms    String?  @db.Text
+  
+  // Status
+  status            String   @default("active") @db.VarChar(50)
+  condition         String   @default("good") @db.VarChar(50)
+  
+  // Audit
+  is_deleted        Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  category          asset_categories @relation(fields: [category_id], references: [id])
+  depreciation_entries asset_depreciation_entries[]
+  movements         asset_movements[]
+  maintenance_schedules maintenance_schedules[]
+  maintenance_requests maintenance_requests[]
+  work_orders       work_orders[]
+  maintenance_records maintenance_records[]
+
+  @@unique([business_id, asset_number])
+  @@index([business_id])
+  @@index([category_id])
+  @@index([status])
+  @@index([station_id])
+  @@map("assets")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// قيود الإهلاك
+// ═══════════════════════════════════════════════════════════════
+
+model asset_depreciation_entries {
+  id                String   @id @default(uuid()) @db.Uuid
+  asset_id          String   @db.Uuid
+  period_start      DateTime @db.Date
+  period_end        DateTime @db.Date
+  depreciation_amount Decimal @db.Decimal(18, 2)
+  accumulated_before Decimal @db.Decimal(18, 2)
+  accumulated_after Decimal  @db.Decimal(18, 2)
+  book_value_before Decimal  @db.Decimal(18, 2)
+  book_value_after  Decimal  @db.Decimal(18, 2)
+  journal_entry_id  String?  @db.Uuid
+  status            String   @default("draft") @db.VarChar(50)
+  created_at        DateTime @default(now())
+
+  asset             assets   @relation(fields: [asset_id], references: [id])
+
+  @@index([asset_id])
+  @@index([period_end])
+  @@map("asset_depreciation_entries")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// حركات الأصول
+// ═══════════════════════════════════════════════════════════════
+
+model asset_movements {
+  id                String   @id @default(uuid()) @db.Uuid
+  asset_id          String   @db.Uuid
+  movement_type     String   @db.VarChar(50)
+  movement_date     DateTime @db.Date
+  from_location     String?  @db.VarChar(500)
+  to_location       String?  @db.VarChar(500)
+  from_custodian_id String?  @db.Uuid
+  to_custodian_id   String?  @db.Uuid
+  value_before      Decimal? @db.Decimal(18, 2)
+  value_after       Decimal? @db.Decimal(18, 2)
+  reason            String?  @db.Text
+  journal_entry_id  String?  @db.Uuid
+  approved_by       String?  @db.Uuid
+  approved_at       DateTime?
+  created_at        DateTime @default(now())
+
+  asset             assets   @relation(fields: [asset_id], references: [id])
+
+  @@index([asset_id])
+  @@index([movement_date])
+  @@map("asset_movements")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// خطط الصيانة الوقائية
+// ═══════════════════════════════════════════════════════════════
+
+model maintenance_plans {
+  id                String   @id @default(uuid()) @db.Uuid
+  business_id       String   @db.Uuid
+  name              String   @db.VarChar(255)
+  description       String?  @db.Text
+  asset_category_id String?  @db.Uuid
+  frequency_type    String   @db.VarChar(50)
+  frequency_value   Int      @default(1)
+  frequency_unit    String?  @db.VarChar(50)
+  estimated_duration Int?
+  estimated_cost    Decimal? @db.Decimal(18, 2)
+  checklist         Json?
+  required_parts    Json?
+  required_skills   Json?
+  is_active         Boolean  @default(true)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  schedules         maintenance_schedules[]
+
+  @@index([business_id])
+  @@map("maintenance_plans")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// جداول الصيانة
+// ═══════════════════════════════════════════════════════════════
+
+model maintenance_schedules {
+  id                String   @id @default(uuid()) @db.Uuid
+  business_id       String   @db.Uuid
+  plan_id           String   @db.Uuid
+  asset_id          String   @db.Uuid
+  schedule_number   String   @db.VarChar(50)
+  scheduled_date    DateTime @db.Date
+  due_date          DateTime @db.Date
+  status            String   @default("scheduled") @db.VarChar(50)
+  priority          String   @default("medium") @db.VarChar(50)
+  assigned_to       String?  @db.Uuid
+  team_id           String?  @db.Uuid
+  started_at        DateTime?
+  completed_at      DateTime?
+  actual_duration   Int?
+  actual_cost       Decimal? @db.Decimal(18, 2)
+  notes             String?  @db.Text
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  plan              maintenance_plans @relation(fields: [plan_id], references: [id])
+  asset             assets            @relation(fields: [asset_id], references: [id])
+  records           maintenance_records[]
+
+  @@index([business_id])
+  @@index([plan_id])
+  @@index([asset_id])
+  @@index([status])
+  @@map("maintenance_schedules")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// طلبات الصيانة الطارئة
+// ═══════════════════════════════════════════════════════════════
+
+model maintenance_requests {
+  id                String   @id @default(uuid()) @db.Uuid
+  business_id       String   @db.Uuid
+  request_number    String   @db.VarChar(50)
+  asset_id          String?  @db.Uuid
+  station_id        String?  @db.Uuid
+  request_type      String   @db.VarChar(50)
+  priority          String   @default("medium") @db.VarChar(50)
+  title             String   @db.VarChar(255)
+  description       String?  @db.Text
+  reported_by       String?  @db.Uuid
+  reported_at       DateTime @default(now())
+  location          String?  @db.VarChar(500)
+  status            String   @default("new") @db.VarChar(50)
+  assigned_to       String?  @db.Uuid
+  team_id           String?  @db.Uuid
+  estimated_completion DateTime?
+  actual_completion DateTime?
+  resolution        String?  @db.Text
+  root_cause        String?  @db.Text
+  attachments       Json?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  asset             assets?  @relation(fields: [asset_id], references: [id])
+  work_orders       work_orders[]
+
+  @@unique([business_id, request_number])
+  @@index([business_id])
+  @@index([asset_id])
+  @@index([status])
+  @@map("maintenance_requests")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// أوامر العمل
+// ═══════════════════════════════════════════════════════════════
+
+model work_orders {
+  id                String   @id @default(uuid()) @db.Uuid
+  business_id       String   @db.Uuid
+  work_order_number String   @db.VarChar(50)
+  request_id        String?  @db.Uuid
+  asset_id          String?  @db.Uuid
+  customer_id       String?  @db.Uuid
+  order_type        String   @db.VarChar(50)
+  priority          String   @default("medium") @db.VarChar(50)
+  title             String   @db.VarChar(255)
+  description       String?  @db.Text
+  instructions      String?  @db.Text
+  status            String   @default("draft") @db.VarChar(50)
+  assigned_to       String?  @db.Uuid
+  team_id           String?  @db.Uuid
+  contractor_id     String?  @db.Uuid
+  scheduled_start   DateTime?
+  scheduled_end     DateTime?
+  actual_start      DateTime?
+  actual_end        DateTime?
+  estimated_cost    Decimal? @db.Decimal(18, 2)
+  actual_cost       Decimal? @db.Decimal(18, 2)
+  approved_by       String?  @db.Uuid
+  approved_at       DateTime?
+  closed_by         String?  @db.Uuid
+  closed_at         DateTime?
+  notes             String?  @db.Text
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  request           maintenance_requests? @relation(fields: [request_id], references: [id])
+  asset             assets?               @relation(fields: [asset_id], references: [id])
+  records           maintenance_records[]
+
+  @@unique([business_id, work_order_number])
+  @@index([business_id])
+  @@index([request_id])
+  @@index([asset_id])
+  @@index([status])
+  @@map("work_orders")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// سجلات الصيانة
+// ═══════════════════════════════════════════════════════════════
+
+model maintenance_records {
+  id                String   @id @default(uuid()) @db.Uuid
+  schedule_id       String?  @db.Uuid
+  work_order_id     String?  @db.Uuid
+  asset_id          String   @db.Uuid
+  maintenance_type  String   @db.VarChar(50)
+  record_number     String   @db.VarChar(50)
+  performed_date    DateTime @db.Date
+  performed_by      String?  @db.Uuid
+  description       String?  @db.Text
+  findings          String?  @db.Text
+  actions_taken     String?  @db.Text
+  parts_used        Json?
+  labor_hours       Decimal? @db.Decimal(8, 2)
+  labor_cost        Decimal? @db.Decimal(18, 2)
+  parts_cost        Decimal? @db.Decimal(18, 2)
+  other_cost        Decimal? @db.Decimal(18, 2)
+  total_cost        Decimal? @db.Decimal(18, 2)
+  condition_before  String?  @db.VarChar(50)
+  condition_after   String?  @db.VarChar(50)
+  next_maintenance_date DateTime? @db.Date
+  attachments       Json?
+  created_at        DateTime @default(now())
+
+  schedule          maintenance_schedules? @relation(fields: [schedule_id], references: [id])
+  work_order        work_orders?           @relation(fields: [work_order_id], references: [id])
+  asset             assets                 @relation(fields: [asset_id], references: [id])
+
+  @@index([asset_id])
+  @@index([schedule_id])
+  @@index([work_order_id])
+  @@map("maintenance_records")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// تصنيفات قطع الغيار
+// ═══════════════════════════════════════════════════════════════
+
+model spare_part_categories {
+  id                String   @id @default(uuid()) @db.Uuid
+  business_id       String   @db.Uuid
+  parent_id         String?  @db.Uuid
+  code              String   @db.VarChar(50)
+  name              String   @db.VarChar(255)
+  name_en           String?  @db.VarChar(255)
+  description       String?  @db.Text
+  is_active         Boolean  @default(true)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  parent            spare_part_categories?  @relation("SparePartCategoryHierarchy", fields: [parent_id], references: [id])
+  children          spare_part_categories[] @relation("SparePartCategoryHierarchy")
+  parts             spare_parts[]
+
+  @@unique([business_id, code])
+  @@index([business_id])
+  @@map("spare_part_categories")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// قطع الغيار
+// ═══════════════════════════════════════════════════════════════
+
+model spare_parts {
+  id                String   @id @default(uuid()) @db.Uuid
+  business_id       String   @db.Uuid
+  category_id       String?  @db.Uuid
+  part_code         String   @db.VarChar(50)
+  name              String   @db.VarChar(255)
+  name_en           String?  @db.VarChar(255)
+  description       String?  @db.Text
+  unit              String   @db.VarChar(50)
+  manufacturer      String?  @db.VarChar(255)
+  model_compatibility Json?
+  asset_categories  Json?
+  min_stock         Int      @default(0)
+  max_stock         Int?
+  reorder_point     Int      @default(0)
+  current_stock     Int      @default(0)
+  unit_cost         Decimal  @default(0) @db.Decimal(18, 2)
+  location          String?  @db.VarChar(255)
+  is_critical       Boolean  @default(false)
+  lead_time_days    Int?
+  notes             String?  @db.Text
+  is_active         Boolean  @default(true)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  category          spare_part_categories? @relation(fields: [category_id], references: [id])
+  movements         spare_part_movements[]
+
+  @@unique([business_id, part_code])
+  @@index([business_id])
+  @@index([category_id])
+  @@map("spare_parts")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// حركات قطع الغيار
+// ═══════════════════════════════════════════════════════════════
+
+model spare_part_movements {
+  id                String   @id @default(uuid()) @db.Uuid
+  part_id           String   @db.Uuid
+  movement_type     String   @db.VarChar(50)
+  movement_date     DateTime @default(now())
+  quantity          Int
+  unit_cost         Decimal? @db.Decimal(18, 2)
+  total_cost        Decimal? @db.Decimal(18, 2)
+  reference_type    String?  @db.VarChar(50)
+  reference_id      String?  @db.Uuid
+  from_location     String?  @db.VarChar(255)
+  to_location       String?  @db.VarChar(255)
+  notes             String?  @db.Text
+  created_by        String?  @db.Uuid
+  created_at        DateTime @default(now())
+
+  part              spare_parts @relation(fields: [part_id], references: [id])
+
+  @@index([part_id])
+  @@index([movement_date])
+  @@map("spare_part_movements")
 }
