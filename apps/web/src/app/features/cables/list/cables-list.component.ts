@@ -18,7 +18,7 @@ import { CablesService, Cable } from '../../../core/services/cables.service';
   template: `
     <p-toast></p-toast>
     <p-confirmDialog></p-confirmDialog>
-    <div class="page-container animate-fade-in">
+    <div class="page-container animate-fade-in p-6">
       <!-- Page Header -->
       <div class="page-header">
         <div>
