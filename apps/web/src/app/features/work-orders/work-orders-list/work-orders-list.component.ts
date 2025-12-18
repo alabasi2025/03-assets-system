@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -195,6 +195,8 @@ import { environment } from '../../../../environments/environment';
 export class WorkOrdersListComponent implements OnInit {
   private maintenanceService = inject(MaintenanceService);
   private messageService = inject(MessageService);
+  private cdr = inject(ChangeDetectorRef);
+  private ngZone = inject(NgZone);
   
   workOrders: WorkOrder[] = [];
   statistics: WorkOrderStatistics | null = null;
@@ -236,10 +238,19 @@ export class WorkOrdersListComponent implements OnInit {
   loadWorkOrders() {
     this.loading = true;
     this.maintenanceService.getWorkOrders(environment.defaultBusinessId, this.filters).subscribe({
-      next: (response) => { this.workOrders = response.data; this.loading = false; },
+      next: (response) => {
+        this.ngZone.run(() => {
+          this.workOrders = response.data;
+          this.loading = false;
+          this.cdr.detectChanges();
+        });
+      },
       error: (error) => {
         console.error('Error:', error);
-        this.loading = false;
+        this.ngZone.run(() => {
+          this.loading = false;
+          this.cdr.detectChanges();
+        });
         this.messageService.add({ severity: 'error', summary: 'خطأ', detail: 'فشل في تحميل أوامر العمل' });
       }
     });
@@ -248,8 +259,19 @@ export class WorkOrdersListComponent implements OnInit {
   loadStatistics() {
     this.loadingStats = true;
     this.maintenanceService.getWorkOrderStatistics(environment.defaultBusinessId).subscribe({
-      next: (response) => { this.statistics = response.data; this.loadingStats = false; },
-      error: () => { this.loadingStats = false; }
+      next: (response) => {
+        this.ngZone.run(() => {
+          this.statistics = response.data;
+          this.loadingStats = false;
+          this.cdr.detectChanges();
+        });
+      },
+      error: () => {
+        this.ngZone.run(() => {
+          this.loadingStats = false;
+          this.cdr.detectChanges();
+        });
+      }
     });
   }
 

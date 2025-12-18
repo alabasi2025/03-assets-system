@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -182,6 +182,8 @@ import { environment } from '../../../../environments/environment';
 export class MaintenancePlansListComponent implements OnInit {
   private maintenanceService = inject(MaintenanceService);
   private messageService = inject(MessageService);
+  private cdr = inject(ChangeDetectorRef);
+  private ngZone = inject(NgZone);
   
   plans: MaintenancePlan[] = [];
   loading = true;
@@ -215,10 +217,19 @@ export class MaintenancePlansListComponent implements OnInit {
     this.loading = true;
     const isActive = this.filterActive === null ? undefined : this.filterActive === 'true';
     this.maintenanceService.getPlans(environment.defaultBusinessId, isActive).subscribe({
-      next: (response) => { this.plans = response.data; this.loading = false; },
+      next: (response) => {
+        this.ngZone.run(() => {
+          this.plans = response.data;
+          this.loading = false;
+          this.cdr.detectChanges();
+        });
+      },
       error: (error) => {
         console.error('Error:', error);
-        this.loading = false;
+        this.ngZone.run(() => {
+          this.loading = false;
+          this.cdr.detectChanges();
+        });
         this.messageService.add({ severity: 'error', summary: 'خطأ', detail: 'فشل في تحميل الخطط' });
       }
     });
@@ -228,16 +239,24 @@ export class MaintenancePlansListComponent implements OnInit {
     this.loadingStats = true;
     this.maintenanceService.getPlans(environment.defaultBusinessId, undefined).subscribe({
       next: (response) => {
-        const plans = response.data;
-        this.stats = {
-          total: plans.length,
-          active: plans.filter((p: any) => this.getIsActive(p)).length,
-          schedules: plans.reduce((sum: number, p: any) => sum + (p._count?.schedules || 0), 0),
-          assetsCount: new Set(plans.filter((p: any) => p.asset_id || p.assetId).map((p: any) => p.asset_id || p.assetId)).size
-        };
-        this.loadingStats = false;
+        this.ngZone.run(() => {
+          const plans = response.data;
+          this.stats = {
+            total: plans.length,
+            active: plans.filter((p: any) => this.getIsActive(p)).length,
+            schedules: plans.reduce((sum: number, p: any) => sum + (p._count?.schedules || 0), 0),
+            assetsCount: new Set(plans.filter((p: any) => p.asset_id || p.assetId).map((p: any) => p.asset_id || p.assetId)).size
+          };
+          this.loadingStats = false;
+          this.cdr.detectChanges();
+        });
       },
-      error: () => { this.loadingStats = false; }
+      error: () => {
+        this.ngZone.run(() => {
+          this.loadingStats = false;
+          this.cdr.detectChanges();
+        });
+      }
     });
   }
 

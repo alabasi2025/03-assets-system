@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -225,6 +225,8 @@ import { environment } from '../../../../environments/environment';
 export class AssetsListComponent implements OnInit {
   private assetsService = inject(AssetsService);
   private messageService = inject(MessageService);
+  private cdr = inject(ChangeDetectorRef);
+  private ngZone = inject(NgZone);
   
   assets: any[] = [];
   categories: AssetCategory[] = [];
@@ -267,11 +269,14 @@ export class AssetsListComponent implements OnInit {
   loadCategories() {
     this.assetsService.getCategories({ businessId: environment.defaultBusinessId }).subscribe({
       next: (response) => {
-        this.categories = response.data;
-        this.categoryOptions = this.categories.map(c => ({
-          label: c.name,
-          value: c.id
-        }));
+        this.ngZone.run(() => {
+          this.categories = response.data;
+          this.categoryOptions = this.categories.map(c => ({
+            label: c.name,
+            value: c.id
+          }));
+          this.cdr.detectChanges();
+        });
       },
       error: (error) => {
         console.error('Error loading categories:', error);
@@ -288,12 +293,18 @@ export class AssetsListComponent implements OnInit {
     this.loading = true;
     this.assetsService.getAssets(this.filters).subscribe({
       next: (response) => {
-        this.assets = response.data;
-        this.loading = false;
+        this.ngZone.run(() => {
+          this.assets = response.data;
+          this.loading = false;
+          this.cdr.detectChanges();
+        });
       },
       error: (error) => {
         console.error('Error loading assets:', error);
-        this.loading = false;
+        this.ngZone.run(() => {
+          this.loading = false;
+          this.cdr.detectChanges();
+        });
         this.messageService.add({
           severity: 'error',
           summary: 'خطأ',
@@ -307,12 +318,18 @@ export class AssetsListComponent implements OnInit {
     this.loadingStats = true;
     this.assetsService.getAssetStatistics(environment.defaultBusinessId).subscribe({
       next: (response) => {
-        this.statistics = response.data;
-        this.loadingStats = false;
+        this.ngZone.run(() => {
+          this.statistics = response.data;
+          this.loadingStats = false;
+          this.cdr.detectChanges();
+        });
       },
       error: (error) => {
         console.error('Error loading statistics:', error);
-        this.loadingStats = false;
+        this.ngZone.run(() => {
+          this.loadingStats = false;
+          this.cdr.detectChanges();
+        });
       }
     });
   }

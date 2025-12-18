@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -194,6 +194,8 @@ import { environment } from '../../../../environments/environment';
 export class SparePartsListComponent implements OnInit {
   private sparePartsService = inject(SparePartsService);
   private messageService = inject(MessageService);
+  private cdr = inject(ChangeDetectorRef);
+  private ngZone = inject(NgZone);
   
   parts: SparePart[] = [];
   categories: SparePartCategory[] = [];
