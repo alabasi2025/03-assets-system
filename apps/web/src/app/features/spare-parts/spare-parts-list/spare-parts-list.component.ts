@@ -34,20 +34,16 @@ import { environment } from '../../../../environments/environment';
     <p-confirmDialog></p-confirmDialog>
     
     <div class="page-container animate-fade-in">
-      <!-- زر الإضافة في أقصى اليسار -->
-      <div class="flex justify-start mb-4">
-        <a routerLink="/spare-parts/new" class="btn-add-primary">
-          <i class="pi pi-plus"></i>
-          <span>إضافة قطعة غيار</span>
-        </a>
-      </div>
-      
-      <!-- Page Header -->
+      <!-- العنوان في اليسار والزر في اليمين -->
       <div class="page-header">
         <div>
           <h2>قطع الغيار</h2>
           <p>إدارة مخزون قطع الغيار</p>
         </div>
+        <a routerLink="/spare-parts/new" class="btn-add-primary">
+          <i class="pi pi-plus"></i>
+          <span>إضافة قطعة غيار</span>
+        </a>
       </div>
 
       <!-- Statistics Cards -->

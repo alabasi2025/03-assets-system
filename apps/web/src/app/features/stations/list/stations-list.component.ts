@@ -24,18 +24,16 @@ import { StationsService, Station } from '../../../core/services/stations.servic
     <p-confirmDialog></p-confirmDialog>
     
     <div class="p-4">
-      <!-- زر الإضافة في أقصى اليسار -->
-      <div class="flex justify-start mb-4">
+      <!-- العنوان في اليسار والزر في اليمين -->
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-800">إدارة المحطات</h2>
+          <p class="text-gray-600">عرض وإدارة محطات التوليد والتوزيع</p>
+        </div>
         <a routerLink="/stations/new" class="btn-add-primary">
           <i class="pi pi-plus"></i>
           <span>إضافة محطة جديدة</span>
         </a>
-      </div>
-      
-      <!-- العنوان في اليمين -->
-      <div class="text-right mb-4">
-        <h2 class="text-2xl font-bold text-gray-800">إدارة المحطات</h2>
-        <p class="text-gray-600">عرض وإدارة محطات التوليد والتوزيع</p>
       </div>
 
       <!-- Stats Cards -->

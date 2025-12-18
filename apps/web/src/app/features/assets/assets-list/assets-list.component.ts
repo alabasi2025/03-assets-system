@@ -46,20 +46,16 @@ import { environment } from '../../../../environments/environment';
     <p-confirmDialog></p-confirmDialog>
     
     <div class="page-container animate-fade-in">
-      <!-- زر الإضافة في أقصى اليسار -->
-      <div class="flex justify-start mb-4">
-        <a routerLink="/assets/new" class="btn-add-primary">
-          <i class="pi pi-plus"></i>
-          <span>إضافة أصل جديد</span>
-        </a>
-      </div>
-      
-      <!-- Page Header -->
+      <!-- العنوان في اليسار والزر في اليمين -->
       <div class="page-header">
         <div>
           <h2>إدارة الأصول</h2>
           <p>عرض وإدارة جميع الأصول المسجلة في النظام</p>
         </div>
+        <a routerLink="/assets/new" class="btn-add-primary">
+          <i class="pi pi-plus"></i>
+          <span>إضافة أصل جديد</span>
+        </a>
       </div>
 
       <!-- Statistics Cards -->

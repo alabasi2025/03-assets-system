@@ -19,18 +19,16 @@ import { MetersService, Meter } from '../../../core/services/meters.service';
     <p-toast></p-toast>
     <p-confirmDialog></p-confirmDialog>
     <div class="p-4">
-      <!-- زر الإضافة في أقصى اليسار -->
-      <div class="flex justify-start mb-4">
+      <!-- العنوان في اليسار والزر في اليمين -->
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-800">إدارة العدادات</h2>
+          <p class="text-gray-600">عرض وإدارة عدادات الكهرباء</p>
+        </div>
         <a routerLink="/meters/new" class="btn-add-cyan">
           <i class="pi pi-plus"></i>
           <span>إضافة عداد جديد</span>
         </a>
-      </div>
-      
-      <!-- العنوان في اليمين -->
-      <div class="text-right mb-4">
-        <h2 class="text-2xl font-bold text-gray-800">إدارة العدادات</h2>
-        <p class="text-gray-600">عرض وإدارة عدادات الكهرباء</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">

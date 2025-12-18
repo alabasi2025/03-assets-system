@@ -34,20 +34,16 @@ import { environment } from '../../../../environments/environment';
     <p-confirmDialog></p-confirmDialog>
     
     <div class="page-container animate-fade-in">
-      <!-- زر الإضافة في أقصى اليسار -->
-      <div class="flex justify-start mb-4">
-        <a routerLink="/work-orders/new" class="btn-add-purple">
-          <i class="pi pi-file-edit"></i>
-          <span>أمر عمل جديد</span>
-        </a>
-      </div>
-      
-      <!-- Page Header -->
+      <!-- العنوان في اليسار والزر في اليمين -->
       <div class="page-header">
         <div>
           <h2>أوامر العمل</h2>
           <p>إدارة أوامر العمل والصيانة</p>
         </div>
+        <a routerLink="/work-orders/new" class="btn-add-purple">
+          <i class="pi pi-file-edit"></i>
+          <span>أمر عمل جديد</span>
+        </a>
       </div>
 
       <!-- Statistics Cards -->
