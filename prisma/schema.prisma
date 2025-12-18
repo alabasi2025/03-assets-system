@@ -443,3 +443,555 @@ model spare_part_movements {
   @@index([movement_date])
   @@map("spare_part_movements")
 }
+
+
+// ═══════════════════════════════════════════════════════════════
+// الجزء الأول: الأصول الفنية
+// ═══════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════
+// 1️⃣ المحطات (Stations)
+// ═══════════════════════════════════════════════════════════════
+
+model stations {
+  id                String   @id @default(uuid()) @db.Uuid
+  business_id       String   @db.Uuid
+  code              String   @db.VarChar(50)
+  name              String   @db.VarChar(255)
+  name_en           String?  @db.VarChar(255)
+  type              String   @db.VarChar(50) // generation_distribution, distribution_only
+  location_lat      Decimal? @db.Decimal(10, 8)
+  location_lng      Decimal? @db.Decimal(11, 8)
+  address           String?  @db.VarChar(500)
+  description       String?  @db.Text
+  status            String   @default("active") @db.VarChar(50) // active, inactive, maintenance
+  total_capacity_kw Decimal? @db.Decimal(18, 2)
+  installation_date DateTime? @db.Date
+  is_deleted        Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  generators        generators[]
+  control_panels    control_panels[]
+  transformers      transformers[]
+  distribution_boxes distribution_boxes[]
+
+  @@unique([business_id, code])
+  @@index([business_id])
+  @@index([status])
+  @@map("stations")
+}
+
+// المولدات
+model generators {
+  id                String   @id @default(uuid()) @db.Uuid
+  station_id        String   @db.Uuid
+  code              String   @db.VarChar(50)
+  name              String   @db.VarChar(255)
+  manufacturer      String?  @db.VarChar(255)
+  model             String?  @db.VarChar(255)
+  serial_number     String?  @db.VarChar(255)
+  year              Int?
+  capacity_kva      Decimal? @db.Decimal(18, 2)
+  capacity_kw       Decimal? @db.Decimal(18, 2)
+  fuel_type         String?  @db.VarChar(50) // diesel, gas, dual
+  status            String   @default("active") @db.VarChar(50)
+  condition         String   @default("good") @db.VarChar(50)
+  purchase_date     DateTime? @db.Date
+  warranty_end      DateTime? @db.Date
+  running_hours     Decimal  @default(0) @db.Decimal(18, 2)
+  last_maintenance  DateTime? @db.Date
+  next_maintenance  DateTime? @db.Date
+  notes             String?  @db.Text
+  is_deleted        Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  station           stations @relation(fields: [station_id], references: [id])
+  components        generator_components[]
+  readings          generator_readings[]
+
+  @@unique([station_id, code])
+  @@index([station_id])
+  @@index([status])
+  @@map("generators")
+}
+
+// مكونات المولد
+model generator_components {
+  id                String   @id @default(uuid()) @db.Uuid
+  generator_id      String   @db.Uuid
+  component_type    String   @db.VarChar(50) // engine, alternator, control_panel, fuel_tank, cooling_system, filter, battery
+  name              String   @db.VarChar(255)
+  serial_number     String?  @db.VarChar(255)
+  install_date      DateTime? @db.Date
+  lifespan_hours    Int?
+  current_hours     Decimal  @default(0) @db.Decimal(18, 2)
+  status            String   @default("good") @db.VarChar(50)
+  last_maintenance  DateTime? @db.Date
+  next_maintenance  DateTime? @db.Date
+  notes             String?  @db.Text
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  generator         generators @relation(fields: [generator_id], references: [id])
+
+  @@index([generator_id])
+  @@map("generator_components")
+}
+
+// قراءات المولد
+model generator_readings {
+  id                String   @id @default(uuid()) @db.Uuid
+  generator_id      String   @db.Uuid
+  reading_time      DateTime @default(now())
+  running_hours     Decimal? @db.Decimal(18, 2)
+  fuel_consumption  Decimal? @db.Decimal(18, 2)
+  voltage           Decimal? @db.Decimal(10, 2)
+  current           Decimal? @db.Decimal(10, 2)
+  frequency         Decimal? @db.Decimal(6, 2)
+  temperature       Decimal? @db.Decimal(6, 2)
+  oil_pressure      Decimal? @db.Decimal(8, 2)
+  power_output      Decimal? @db.Decimal(18, 2)
+  source            String   @default("manual") @db.VarChar(50) // manual, iot
+  recorded_by       String?  @db.Uuid
+  created_at        DateTime @default(now())
+
+  generator         generators @relation(fields: [generator_id], references: [id])
+
+  @@index([generator_id])
+  @@index([reading_time])
+  @@map("generator_readings")
+}
+
+// لوحات التحكم
+model control_panels {
+  id                String   @id @default(uuid()) @db.Uuid
+  station_id        String   @db.Uuid
+  code              String   @db.VarChar(50)
+  name              String   @db.VarChar(255)
+  type              String   @db.VarChar(50) // main, sub
+  capacity_amp      Decimal? @db.Decimal(10, 2)
+  outputs_count     Int?
+  status            String   @default("active") @db.VarChar(50)
+  installation_date DateTime? @db.Date
+  notes             String?  @db.Text
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  station           stations @relation(fields: [station_id], references: [id])
+
+  @@unique([station_id, code])
+  @@index([station_id])
+  @@map("control_panels")
+}
+
+// المحولات
+model transformers {
+  id                String   @id @default(uuid()) @db.Uuid
+  station_id        String   @db.Uuid
+  code              String   @db.VarChar(50)
+  name              String   @db.VarChar(255)
+  capacity_kva      Decimal? @db.Decimal(18, 2)
+  ratio             String?  @db.VarChar(50) // e.g., "11000/400"
+  cooling_type      String?  @db.VarChar(50) // oil, dry
+  status            String   @default("active") @db.VarChar(50)
+  installation_date DateTime? @db.Date
+  notes             String?  @db.Text
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  station           stations @relation(fields: [station_id], references: [id])
+
+  @@unique([station_id, code])
+  @@index([station_id])
+  @@map("transformers")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 2️⃣ محطات الطاقة الشمسية (Solar Stations)
+// ═══════════════════════════════════════════════════════════════
+
+model solar_stations {
+  id                String   @id @default(uuid()) @db.Uuid
+  business_id       String   @db.Uuid
+  code              String   @db.VarChar(50)
+  name              String   @db.VarChar(255)
+  name_en           String?  @db.VarChar(255)
+  location_lat      Decimal? @db.Decimal(10, 8)
+  location_lng      Decimal? @db.Decimal(11, 8)
+  address           String?  @db.VarChar(500)
+  total_capacity_kw Decimal? @db.Decimal(18, 2)
+  panels_count      Int      @default(0)
+  inverters_count   Int      @default(0)
+  installation_date DateTime? @db.Date
+  status            String   @default("active") @db.VarChar(50)
+  description       String?  @db.Text
+  is_deleted        Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  panels            solar_panels[]
+  inverters         inverters[]
+  batteries         batteries[]
+
+  @@unique([business_id, code])
+  @@index([business_id])
+  @@index([status])
+  @@map("solar_stations")
+}
+
+// الألواح الشمسية
+model solar_panels {
+  id                String   @id @default(uuid()) @db.Uuid
+  solar_station_id  String   @db.Uuid
+  code              String   @db.VarChar(50)
+  manufacturer      String?  @db.VarChar(255)
+  model             String?  @db.VarChar(255)
+  capacity_watt     Decimal? @db.Decimal(10, 2)
+  voltage           Decimal? @db.Decimal(10, 2)
+  current           Decimal? @db.Decimal(10, 2)
+  efficiency        Decimal? @db.Decimal(5, 2)
+  row_number        Int?
+  column_number     Int?
+  tilt_angle        Decimal? @db.Decimal(5, 2)
+  orientation       String?  @db.VarChar(50) // north, south, east, west
+  status            String   @default("active") @db.VarChar(50)
+  installation_date DateTime? @db.Date
+  notes             String?  @db.Text
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  solar_station     solar_stations @relation(fields: [solar_station_id], references: [id])
+  inverter_panels   inverter_panels[]
+
+  @@unique([solar_station_id, code])
+  @@index([solar_station_id])
+  @@map("solar_panels")
+}
+
+// الانفرترات
+model inverters {
+  id                String   @id @default(uuid()) @db.Uuid
+  solar_station_id  String   @db.Uuid
+  code              String   @db.VarChar(50)
+  manufacturer      String?  @db.VarChar(255)
+  model             String?  @db.VarChar(255)
+  capacity_kw       Decimal? @db.Decimal(18, 2)
+  type              String?  @db.VarChar(50) // string, central, micro
+  mppt_count        Int?
+  output_cable_id   String?  @db.Uuid
+  status            String   @default("active") @db.VarChar(50)
+  installation_date DateTime? @db.Date
+  notes             String?  @db.Text
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  solar_station     solar_stations @relation(fields: [solar_station_id], references: [id])
+  panels            inverter_panels[]
+  readings          inverter_readings[]
+
+  @@unique([solar_station_id, code])
+  @@index([solar_station_id])
+  @@map("inverters")
+}
+
+// ربط الانفرتر بالألواح
+model inverter_panels {
+  id                String   @id @default(uuid()) @db.Uuid
+  inverter_id       String   @db.Uuid
+  panel_id          String   @db.Uuid
+  mppt_input        Int?
+  created_at        DateTime @default(now())
+
+  inverter          inverters @relation(fields: [inverter_id], references: [id])
+  panel             solar_panels @relation(fields: [panel_id], references: [id])
+
+  @@unique([inverter_id, panel_id])
+  @@index([inverter_id])
+  @@index([panel_id])
+  @@map("inverter_panels")
+}
+
+// قراءات الانفرتر
+model inverter_readings {
+  id                String   @id @default(uuid()) @db.Uuid
+  inverter_id       String   @db.Uuid
+  reading_time      DateTime @default(now())
+  dc_power          Decimal? @db.Decimal(18, 2)
+  ac_power          Decimal? @db.Decimal(18, 2)
+  efficiency        Decimal? @db.Decimal(5, 2)
+  temperature       Decimal? @db.Decimal(6, 2)
+  daily_energy      Decimal? @db.Decimal(18, 2)
+  total_energy      Decimal? @db.Decimal(18, 2)
+  source            String   @default("manual") @db.VarChar(50)
+  created_at        DateTime @default(now())
+
+  inverter          inverters @relation(fields: [inverter_id], references: [id])
+
+  @@index([inverter_id])
+  @@index([reading_time])
+  @@map("inverter_readings")
+}
+
+// البطاريات
+model batteries {
+  id                String   @id @default(uuid()) @db.Uuid
+  solar_station_id  String?  @db.Uuid
+  station_id        String?  @db.Uuid
+  code              String   @db.VarChar(50)
+  name              String   @db.VarChar(255)
+  type              String?  @db.VarChar(50) // lithium, lead_acid
+  capacity_kwh      Decimal? @db.Decimal(18, 2)
+  voltage           Decimal? @db.Decimal(10, 2)
+  max_cycles        Int?
+  current_cycles    Int      @default(0)
+  status            String   @default("active") @db.VarChar(50)
+  installation_date DateTime? @db.Date
+  notes             String?  @db.Text
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  solar_station     solar_stations? @relation(fields: [solar_station_id], references: [id])
+  readings          battery_readings[]
+
+  @@index([solar_station_id])
+  @@map("batteries")
+}
+
+// قراءات البطارية
+model battery_readings {
+  id                String   @id @default(uuid()) @db.Uuid
+  battery_id        String   @db.Uuid
+  reading_time      DateTime @default(now())
+  charge_level      Decimal? @db.Decimal(5, 2)
+  voltage           Decimal? @db.Decimal(10, 2)
+  current           Decimal? @db.Decimal(10, 2)
+  temperature       Decimal? @db.Decimal(6, 2)
+  health            Decimal? @db.Decimal(5, 2)
+  source            String   @default("manual") @db.VarChar(50)
+  created_at        DateTime @default(now())
+
+  battery           batteries @relation(fields: [battery_id], references: [id])
+
+  @@index([battery_id])
+  @@index([reading_time])
+  @@map("battery_readings")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 3️⃣ الشبكة الكهربائية (Electrical Network)
+// ═══════════════════════════════════════════════════════════════
+
+// الكيابل/الخطوط
+model cables {
+  id                String   @id @default(uuid()) @db.Uuid
+  business_id       String   @db.Uuid
+  code              String   @db.VarChar(50)
+  name              String   @db.VarChar(255)
+  type              String   @db.VarChar(50) // main, sub, link
+  cross_section     Decimal? @db.Decimal(10, 2) // mm²
+  material          String?  @db.VarChar(50) // copper, aluminum
+  length_meters     Decimal? @db.Decimal(18, 2)
+  capacity_amp      Decimal? @db.Decimal(10, 2)
+  start_point_type  String?  @db.VarChar(50) // station, junction
+  start_point_id    String?  @db.Uuid
+  end_point_type    String?  @db.VarChar(50)
+  end_point_id      String?  @db.Uuid
+  path_coordinates  Json?
+  status            String   @default("active") @db.VarChar(50)
+  installation_date DateTime? @db.Date
+  notes             String?  @db.Text
+  is_deleted        Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  junction_cables   junction_cables[]
+  cable_status      cable_status[]
+
+  @@unique([business_id, code])
+  @@index([business_id])
+  @@index([status])
+  @@map("cables")
+}
+
+// نقاط الالتقاء
+model junction_points {
+  id                String   @id @default(uuid()) @db.Uuid
+  business_id       String   @db.Uuid
+  code              String   @db.VarChar(50)
+  name              String   @db.VarChar(255)
+  type              String   @db.VarChar(50) // intersection, distribution, link, collection_box
+  location_lat      Decimal? @db.Decimal(10, 8)
+  location_lng      Decimal? @db.Decimal(11, 8)
+  description       String?  @db.Text
+  status            String   @default("active") @db.VarChar(50)
+  is_deleted        Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  cables            junction_cables[]
+
+  @@unique([business_id, code])
+  @@index([business_id])
+  @@map("junction_points")
+}
+
+// ربط الكيابل بنقاط الالتقاء
+model junction_cables {
+  id                String   @id @default(uuid()) @db.Uuid
+  junction_point_id String   @db.Uuid
+  cable_id          String   @db.Uuid
+  direction         String   @db.VarChar(50) // in, out
+  created_at        DateTime @default(now())
+
+  junction_point    junction_points @relation(fields: [junction_point_id], references: [id])
+  cable             cables @relation(fields: [cable_id], references: [id])
+
+  @@unique([junction_point_id, cable_id])
+  @@index([junction_point_id])
+  @@index([cable_id])
+  @@map("junction_cables")
+}
+
+// المفاتيح/القواطع
+model switches {
+  id                String   @id @default(uuid()) @db.Uuid
+  business_id       String   @db.Uuid
+  code              String   @db.VarChar(50)
+  name              String   @db.VarChar(255)
+  type              String   @db.VarChar(50) // manual, automatic, remote
+  capacity_amp      Decimal? @db.Decimal(10, 2)
+  location_type     String?  @db.VarChar(50) // station, junction, cable
+  location_id       String?  @db.Uuid
+  is_open           Boolean  @default(false)
+  is_remote         Boolean  @default(false)
+  iot_device_id     String?  @db.Uuid
+  status            String   @default("active") @db.VarChar(50)
+  is_deleted        Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  logs              switch_logs[]
+
+  @@unique([business_id, code])
+  @@index([business_id])
+  @@map("switches")
+}
+
+// سجل تغييرات المفاتيح
+model switch_logs {
+  id                String   @id @default(uuid()) @db.Uuid
+  switch_id         String   @db.Uuid
+  action            String   @db.VarChar(50) // open, close
+  performed_by      String?  @db.Uuid
+  performed_at      DateTime @default(now())
+  reason            String?  @db.Text
+  notes             String?  @db.Text
+  created_at        DateTime @default(now())
+
+  switch            switches @relation(fields: [switch_id], references: [id])
+
+  @@index([switch_id])
+  @@index([performed_at])
+  @@map("switch_logs")
+}
+
+// صناديق التجميع
+model distribution_boxes {
+  id                String   @id @default(uuid()) @db.Uuid
+  business_id       String   @db.Uuid
+  code              String   @db.VarChar(50)
+  name              String   @db.VarChar(255)
+  station_id        String?  @db.Uuid
+  cable_id          String?  @db.Uuid
+  location_lat      Decimal? @db.Decimal(10, 8)
+  location_lng      Decimal? @db.Decimal(11, 8)
+  address           String?  @db.VarChar(500)
+  max_capacity      Int?
+  current_meters_count Int   @default(0)
+  status            String   @default("active") @db.VarChar(50)
+  last_inspection_date DateTime? @db.Date
+  notes             String?  @db.Text
+  is_deleted        Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  station           stations? @relation(fields: [station_id], references: [id])
+  meters            meters[]
+
+  @@unique([business_id, code])
+  @@index([business_id])
+  @@index([station_id])
+  @@map("distribution_boxes")
+}
+
+// العدادات
+model meters {
+  id                String   @id @default(uuid()) @db.Uuid
+  business_id       String   @db.Uuid
+  code              String   @db.VarChar(50)
+  serial_number     String?  @db.VarChar(255)
+  type              String   @db.VarChar(50) // traditional, sts, smart
+  manufacturer      String?  @db.VarChar(255)
+  model             String?  @db.VarChar(255)
+  capacity_amp      Decimal? @db.Decimal(10, 2)
+  distribution_box_id String? @db.Uuid
+  subscriber_id     String?  @db.Uuid
+  location_lat      Decimal? @db.Decimal(10, 8)
+  location_lng      Decimal? @db.Decimal(11, 8)
+  connection_type   String?  @db.VarChar(50) // manual, wifi, gprs, lora
+  iot_device_id     String?  @db.Uuid
+  status            String   @default("active") @db.VarChar(50)
+  installation_date DateTime? @db.Date
+  is_deleted        Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  distribution_box  distribution_boxes? @relation(fields: [distribution_box_id], references: [id])
+  readings          meter_readings[]
+
+  @@unique([business_id, code])
+  @@index([business_id])
+  @@index([distribution_box_id])
+  @@map("meters")
+}
+
+// قراءات العدادات
+model meter_readings {
+  id                String   @id @default(uuid()) @db.Uuid
+  meter_id          String   @db.Uuid
+  reading_time      DateTime @default(now())
+  reading_value     Decimal? @db.Decimal(18, 2)
+  consumption       Decimal? @db.Decimal(18, 2)
+  peak_demand       Decimal? @db.Decimal(18, 2)
+  power_factor      Decimal? @db.Decimal(5, 2)
+  source            String   @default("manual") @db.VarChar(50)
+  reader_id         String?  @db.Uuid
+  created_at        DateTime @default(now())
+
+  meter             meters @relation(fields: [meter_id], references: [id])
+
+  @@index([meter_id])
+  @@index([reading_time])
+  @@map("meter_readings")
+}
+
+// حالة الكيابل (للمراقبة)
+model cable_status {
+  id                String   @id @default(uuid()) @db.Uuid
+  cable_id          String   @db.Uuid
+  reading_time      DateTime @default(now())
+  current_load      Decimal? @db.Decimal(10, 2)
+  load_percentage   Decimal? @db.Decimal(5, 2)
+  temperature       Decimal? @db.Decimal(6, 2)
+  status            String   @default("normal") @db.VarChar(50)
+  source            String   @default("manual") @db.VarChar(50)
+  created_at        DateTime @default(now())
+
+  cable             cables @relation(fields: [cable_id], references: [id])
+
+  @@index([cable_id])
+  @@index([reading_time])
+  @@map("cable_status")
+}

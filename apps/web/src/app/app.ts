@@ -16,25 +16,56 @@ import { TooltipModule } from 'primeng/tooltip';
       <aside class="sidebar">
         <div class="sidebar-header">
           <div class="logo">
-            <i class="pi pi-building"></i>
+            <i class="pi pi-bolt"></i>
           </div>
           <h1>نظام الأصول</h1>
           <span class="subtitle">والصيانة</span>
         </div>
         
         <nav class="sidebar-nav">
+          <!-- Dashboard -->
           <div class="nav-section">
-            <span class="nav-section-title">إدارة الأصول</span>
+            <a routerLink="/dashboard" routerLinkActive="active" class="nav-item" pRipple>
+              <i class="pi pi-home"></i>
+              <span>لوحة التحكم</span>
+            </a>
+          </div>
+
+          <!-- Technical Assets -->
+          <div class="nav-section">
+            <span class="nav-section-title">الأصول الفنية</span>
+            <a routerLink="/stations" routerLinkActive="active" class="nav-item" pRipple>
+              <i class="pi pi-building"></i>
+              <span>المحطات</span>
+            </a>
+            <a routerLink="/generators" routerLinkActive="active" class="nav-item" pRipple>
+              <i class="pi pi-cog"></i>
+              <span>المولدات</span>
+            </a>
+            <a routerLink="/cables" routerLinkActive="active" class="nav-item" pRipple>
+              <i class="pi pi-share-alt"></i>
+              <span>الكابلات</span>
+            </a>
+            <a routerLink="/meters" routerLinkActive="active" class="nav-item" pRipple>
+              <i class="pi pi-gauge"></i>
+              <span>العدادات</span>
+            </a>
+            <a routerLink="/solar-stations" routerLinkActive="active" class="nav-item" pRipple>
+              <i class="pi pi-sun"></i>
+              <span>الطاقة الشمسية</span>
+            </a>
+          </div>
+
+          <!-- Accounting Assets -->
+          <div class="nav-section">
+            <span class="nav-section-title">الأصول المحاسبية</span>
             <a routerLink="/assets" routerLinkActive="active" class="nav-item" pRipple>
               <i class="pi pi-server"></i>
               <span>الأصول</span>
             </a>
-            <a routerLink="/asset-categories" routerLinkActive="active" class="nav-item" pRipple>
-              <i class="pi pi-tags"></i>
-              <span>التصنيفات</span>
-            </a>
           </div>
           
+          <!-- Preventive Maintenance -->
           <div class="nav-section">
             <span class="nav-section-title">الصيانة الوقائية</span>
             <a routerLink="/maintenance-plans" routerLinkActive="active" class="nav-item" pRipple>
@@ -43,6 +74,7 @@ import { TooltipModule } from 'primeng/tooltip';
             </a>
           </div>
           
+          <!-- Emergency Maintenance -->
           <div class="nav-section">
             <span class="nav-section-title">الصيانة الطارئة</span>
             <a routerLink="/maintenance-requests" routerLinkActive="active" class="nav-item" pRipple>
@@ -55,6 +87,7 @@ import { TooltipModule } from 'primeng/tooltip';
             </a>
           </div>
           
+          <!-- Inventory -->
           <div class="nav-section">
             <span class="nav-section-title">المخزون</span>
             <a routerLink="/spare-parts" routerLinkActive="active" class="nav-item" pRipple>
@@ -65,7 +98,7 @@ import { TooltipModule } from 'primeng/tooltip';
         </nav>
         
         <div class="sidebar-footer">
-          <span class="version">الإصدار 1.0.0</span>
+          <span class="version">الإصدار 2.0.0</span>
         </div>
       </aside>
       
@@ -107,13 +140,13 @@ import { TooltipModule } from 'primeng/tooltip';
     .logo {
       width: 56px;
       height: 56px;
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
       border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
       margin: 0 auto 12px;
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
     }
     
     .logo i { font-size: 1.75rem; color: white; }
@@ -137,7 +170,7 @@ import { TooltipModule } from 'primeng/tooltip';
     }
     
     .nav-section {
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
     
     .nav-section-title {
@@ -155,13 +188,13 @@ import { TooltipModule } from 'primeng/tooltip';
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 12px 16px;
+      padding: 10px 16px;
       color: rgba(255,255,255,0.75);
       text-decoration: none;
       border-radius: 10px;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
       transition: all 0.2s ease;
-      font-size: 0.9rem;
+      font-size: 0.875rem;
       position: relative;
       overflow: hidden;
     }
@@ -178,8 +211,8 @@ import { TooltipModule } from 'primeng/tooltip';
     }
     
     .nav-item i {
-      font-size: 1.1rem;
-      width: 24px;
+      font-size: 1rem;
+      width: 20px;
       text-align: center;
     }
     

@@ -104,7 +104,7 @@ export class MaintenanceService {
   // Work Orders
   // ═══════════════════════════════════════════════════════════════
 
-  getWorkOrders(businessId: string, filters?: {
+  getWorkOrders(businessId?: string, filters?: {
     status?: string;
     priority?: string;
     orderType?: string;

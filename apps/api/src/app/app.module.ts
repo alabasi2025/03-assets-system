@@ -10,14 +10,29 @@ import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { AuditInterceptor } from '../common/interceptors/audit.interceptor';
 
-// Feature Modules
+// Feature Modules - Assets Management
 import { AssetCategoriesModule } from '../modules/asset-categories/asset-categories.module';
 import { AssetsModule } from '../modules/assets/assets.module';
 import { DepreciationModule } from '../modules/depreciation/depreciation.module';
+
+// Feature Modules - Maintenance
 import { MaintenancePlansModule } from '../modules/maintenance-plans/maintenance-plans.module';
 import { MaintenanceRequestsModule } from '../modules/maintenance-requests/maintenance-requests.module';
 import { WorkOrdersModule } from '../modules/work-orders/work-orders.module';
 import { SparePartsModule } from '../modules/spare-parts/spare-parts.module';
+
+// Feature Modules - Technical Assets (Stations & Generators)
+import { StationsModule } from '../modules/stations/stations.module';
+import { GeneratorsModule } from '../modules/generators/generators.module';
+
+// Feature Modules - Electrical Network
+import { CablesModule } from '../modules/cables/cables.module';
+import { MetersModule } from '../modules/meters/meters.module';
+
+// Feature Modules - Solar Energy
+import { SolarStationsModule } from '../modules/solar-stations/solar-stations.module';
+
+// Health Check
 import { HealthModule } from '../modules/health/health.module';
 
 @Module({
@@ -34,7 +49,7 @@ import { HealthModule } from '../modules/health/health.module';
     // Health Check
     HealthModule,
     
-    // Assets Management
+    // Assets Management (Accounting)
     AssetCategoriesModule,
     AssetsModule,
     DepreciationModule,
@@ -46,6 +61,17 @@ import { HealthModule } from '../modules/health/health.module';
     
     // Spare Parts
     SparePartsModule,
+    
+    // Technical Assets - Stations & Generators
+    StationsModule,
+    GeneratorsModule,
+    
+    // Electrical Network
+    CablesModule,
+    MetersModule,
+    
+    // Solar Energy
+    SolarStationsModule,
   ],
   controllers: [AppController],
   providers: [
