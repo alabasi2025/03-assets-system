@@ -28,23 +28,47 @@ export const appRoutes: Route[] = [
       }
     ]
   },
-  // Preventive Maintenance
+  // Preventive Maintenance Plans
   {
     path: 'maintenance-plans',
     children: [
       {
         path: '',
         loadComponent: () => import('./features/maintenance-plans/maintenance-plans-list/maintenance-plans-list.component').then(m => m.MaintenancePlansListComponent)
+      },
+      {
+        path: 'new',
+        loadComponent: () => import('./features/maintenance-plans/maintenance-plan-form/maintenance-plan-form.component').then(m => m.MaintenancePlanFormComponent)
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./features/maintenance-plans/maintenance-plan-form/maintenance-plan-form.component').then(m => m.MaintenancePlanFormComponent)
+      },
+      {
+        path: ':id/edit',
+        loadComponent: () => import('./features/maintenance-plans/maintenance-plan-form/maintenance-plan-form.component').then(m => m.MaintenancePlanFormComponent)
       }
     ]
   },
-  // Corrective/Emergency Maintenance
+  // Corrective/Emergency Maintenance Requests
   {
     path: 'maintenance-requests',
     children: [
       {
         path: '',
         loadComponent: () => import('./features/maintenance-requests/maintenance-requests-list/maintenance-requests-list.component').then(m => m.MaintenanceRequestsListComponent)
+      },
+      {
+        path: 'new',
+        loadComponent: () => import('./features/maintenance-requests/maintenance-request-form/maintenance-request-form.component').then(m => m.MaintenanceRequestFormComponent)
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./features/maintenance-requests/maintenance-request-form/maintenance-request-form.component').then(m => m.MaintenanceRequestFormComponent)
+      },
+      {
+        path: ':id/edit',
+        loadComponent: () => import('./features/maintenance-requests/maintenance-request-form/maintenance-request-form.component').then(m => m.MaintenanceRequestFormComponent)
       }
     ]
   },
@@ -55,6 +79,18 @@ export const appRoutes: Route[] = [
       {
         path: '',
         loadComponent: () => import('./features/work-orders/work-orders-list/work-orders-list.component').then(m => m.WorkOrdersListComponent)
+      },
+      {
+        path: 'new',
+        loadComponent: () => import('./features/work-orders/work-order-form/work-order-form.component').then(m => m.WorkOrderFormComponent)
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./features/work-orders/work-order-form/work-order-form.component').then(m => m.WorkOrderFormComponent)
+      },
+      {
+        path: ':id/edit',
+        loadComponent: () => import('./features/work-orders/work-order-form/work-order-form.component').then(m => m.WorkOrderFormComponent)
       }
     ]
   },
@@ -65,6 +101,18 @@ export const appRoutes: Route[] = [
       {
         path: '',
         loadComponent: () => import('./features/spare-parts/spare-parts-list/spare-parts-list.component').then(m => m.SparePartsListComponent)
+      },
+      {
+        path: 'new',
+        loadComponent: () => import('./features/spare-parts/spare-part-form/spare-part-form.component').then(m => m.SparePartFormComponent)
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./features/spare-parts/spare-part-form/spare-part-form.component').then(m => m.SparePartFormComponent)
+      },
+      {
+        path: ':id/edit',
+        loadComponent: () => import('./features/spare-parts/spare-part-form/spare-part-form.component').then(m => m.SparePartFormComponent)
       }
     ]
   },

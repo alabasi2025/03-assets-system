@@ -13,7 +13,8 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { ToastModule } from 'primeng/toast';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TooltipModule } from 'primeng/tooltip';
-import { MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageService, ConfirmationService } from 'primeng/api';
 
 import { MaintenanceService } from '../../../core/services/maintenance.service';
 import { WorkOrder, WorkOrderStatistics } from '../../../core/models/maintenance.model';
@@ -25,11 +26,12 @@ import { environment } from '../../../../environments/environment';
   imports: [
     CommonModule, RouterModule, FormsModule,
     TableModule, ButtonModule, InputTextModule, SelectModule,
-    TagModule, SkeletonModule, ToastModule, ProgressSpinnerModule, TooltipModule
+    TagModule, SkeletonModule, ToastModule, ProgressSpinnerModule, TooltipModule, ConfirmDialogModule
   ],
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
   template: `
     <p-toast position="top-left"></p-toast>
+    <p-confirmDialog></p-confirmDialog>
     
     <div class="page-container animate-fade-in">
       <!-- Page Header -->
@@ -148,15 +150,12 @@ import { environment } from '../../../../environments/environment';
               <td class="font-mono">{{ order.actualCost || order.actual_cost || order.estimatedCost || order.estimated_cost || 0 | number:'1.2-2' }}</td>
               <td>
                 <div class="flex gap-1">
+                  <p-button icon="pi pi-trash" [text]="true" severity="danger" size="small"
+                            pTooltip="حذف" (click)="deleteOrder(order)"></p-button>
+                  <p-button icon="pi pi-pencil" [text]="true" severity="secondary" size="small"
+                            pTooltip="تعديل" [routerLink]="['/work-orders', order.id, 'edit']"></p-button>
                   <p-button icon="pi pi-eye" [text]="true" severity="info" size="small"
                             pTooltip="عرض" [routerLink]="['/work-orders', order.id]"></p-button>
-                  <p-button *ngIf="order.status === 'draft'" icon="pi pi-check" [text]="true" severity="success" size="small"
-                            pTooltip="اعتماد" (click)="approveOrder(order)"></p-button>
-                  <p-button *ngIf="order.status === 'approved' || order.status === 'assigned'" 
-                            icon="pi pi-play" [text]="true" severity="warn" size="small"
-                            pTooltip="بدء" (click)="startOrder(order)"></p-button>
-                  <p-button *ngIf="order.status === 'in_progress'" icon="pi pi-check-circle" [text]="true" severity="success" size="small"
-                            pTooltip="إنهاء" (click)="completeOrder(order)"></p-button>
                 </div>
               </td>
             </tr>
@@ -195,6 +194,7 @@ import { environment } from '../../../../environments/environment';
 export class WorkOrdersListComponent implements OnInit {
   private maintenanceService = inject(MaintenanceService);
   private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
   private cdr = inject(ChangeDetectorRef);
   private ngZone = inject(NgZone);
   
@@ -316,6 +316,38 @@ export class WorkOrdersListComponent implements OnInit {
         this.messageService.add({ severity: 'success', summary: 'تم', detail: 'تم إنهاء أمر العمل' });
       },
       error: () => this.messageService.add({ severity: 'error', summary: 'خطأ', detail: 'فشل في إنهاء الأمر' })
+    });
+  }
+
+  deleteOrder(order: WorkOrder) {
+    this.confirmationService.confirm({
+      message: `هل أنت متأكد من حذف أمر العمل "${order.title}"?`,
+      header: 'تأكيد الحذف',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'نعم، احذف',
+      rejectLabel: 'إلغاء',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        this.maintenanceService.deleteWorkOrder(order.id).subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'تم',
+              detail: 'تم حذف أمر العمل بنجاح'
+            });
+            this.loadWorkOrders();
+            this.loadStatistics();
+          },
+          error: (error: any) => {
+            console.error('Error:', error);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'خطأ',
+              detail: 'فشل في حذف أمر العمل'
+            });
+          }
+        });
+      }
     });
   }
 

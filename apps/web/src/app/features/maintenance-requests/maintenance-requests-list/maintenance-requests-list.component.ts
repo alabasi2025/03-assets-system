@@ -13,7 +13,8 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { ToastModule } from 'primeng/toast';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TooltipModule } from 'primeng/tooltip';
-import { MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageService, ConfirmationService } from 'primeng/api';
 
 import { MaintenanceService } from '../../../core/services/maintenance.service';
 import { MaintenanceRequest, MaintenanceStatistics } from '../../../core/models/maintenance.model';
@@ -25,11 +26,12 @@ import { environment } from '../../../../environments/environment';
   imports: [
     CommonModule, RouterModule, FormsModule,
     TableModule, ButtonModule, InputTextModule, SelectModule,
-    TagModule, SkeletonModule, ToastModule, ProgressSpinnerModule, TooltipModule
+    TagModule, SkeletonModule, ToastModule, ProgressSpinnerModule, TooltipModule, ConfirmDialogModule
   ],
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
   template: `
     <p-toast position="top-left"></p-toast>
+    <p-confirmDialog></p-confirmDialog>
     
     <div class="page-container animate-fade-in">
       <!-- Page Header -->
@@ -137,13 +139,12 @@ import { environment } from '../../../../environments/environment';
               <td class="text-slate-500">{{ getReportedAt(request) | date:'yyyy-MM-dd' }}</td>
               <td>
                 <div class="flex gap-1">
+                  <p-button icon="pi pi-trash" [text]="true" severity="danger" size="small"
+                            pTooltip="حذف" (click)="deleteRequest(request)"></p-button>
+                  <p-button icon="pi pi-pencil" [text]="true" severity="secondary" size="small"
+                            pTooltip="تعديل" [routerLink]="['/maintenance-requests', request.id, 'edit']"></p-button>
                   <p-button icon="pi pi-eye" [text]="true" severity="info" size="small"
                             pTooltip="عرض" [routerLink]="['/maintenance-requests', request.id]"></p-button>
-                  <p-button icon="pi pi-pencil" [text]="true" severity="warn" size="small"
-                            pTooltip="تعديل" [routerLink]="['/maintenance-requests', request.id, 'edit']"></p-button>
-                  <p-button *ngIf="request.status === 'new' || request.status === 'pending'" 
-                            icon="pi pi-file" [text]="true" severity="success" size="small"
-                            pTooltip="إنشاء أمر عمل" (click)="createWorkOrder(request)"></p-button>
                 </div>
               </td>
             </tr>
@@ -181,6 +182,7 @@ import { environment } from '../../../../environments/environment';
 export class MaintenanceRequestsListComponent implements OnInit {
   private maintenanceService = inject(MaintenanceService);
   private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
   private cdr = inject(ChangeDetectorRef);
   private ngZone = inject(NgZone);
   
@@ -266,6 +268,26 @@ export class MaintenanceRequestsListComponent implements OnInit {
 
   createWorkOrder(request: MaintenanceRequest) {
     this.messageService.add({ severity: 'info', summary: 'قريباً', detail: 'سيتم إضافة هذه الميزة' });
+  }
+
+  deleteRequest(request: MaintenanceRequest) {
+    this.confirmationService.confirm({
+      message: `هل أنت متأكد من حذف طلب الصيانة "${request.title}"?`,
+      header: 'تأكيد الحذف',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'نعم، احذف',
+      rejectLabel: 'إلغاء',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'تم',
+          detail: 'تم حذف طلب الصيانة بنجاح'
+        });
+        this.loadRequests();
+        this.loadStatistics();
+      }
+    });
   }
 
   getRequestNumber(request: any): string {

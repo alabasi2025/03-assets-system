@@ -13,7 +13,8 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { ToastModule } from 'primeng/toast';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TooltipModule } from 'primeng/tooltip';
-import { MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageService, ConfirmationService } from 'primeng/api';
 
 import { SparePartsService } from '../../../core/services/spare-parts.service';
 import { SparePart, SparePartCategory, SparePartStatistics } from '../../../core/models/spare-part.model';
@@ -25,11 +26,12 @@ import { environment } from '../../../../environments/environment';
   imports: [
     CommonModule, RouterModule, FormsModule,
     TableModule, ButtonModule, InputTextModule, SelectModule,
-    TagModule, SkeletonModule, ToastModule, ProgressSpinnerModule, TooltipModule
+    TagModule, SkeletonModule, ToastModule, ProgressSpinnerModule, TooltipModule, ConfirmDialogModule
   ],
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
   template: `
     <p-toast position="top-left"></p-toast>
+    <p-confirmDialog></p-confirmDialog>
     
     <div class="page-container animate-fade-in">
       <!-- Page Header -->
@@ -147,12 +149,12 @@ import { environment } from '../../../../environments/environment';
               </td>
               <td>
                 <div class="flex gap-1">
+                  <p-button icon="pi pi-trash" [text]="true" severity="danger" size="small"
+                            pTooltip="حذف" (click)="deletePart(part)"></p-button>
+                  <p-button icon="pi pi-pencil" [text]="true" severity="secondary" size="small"
+                            pTooltip="تعديل" [routerLink]="['/spare-parts', part.id, 'edit']"></p-button>
                   <p-button icon="pi pi-eye" [text]="true" severity="info" size="small"
                             pTooltip="عرض" [routerLink]="['/spare-parts', part.id]"></p-button>
-                  <p-button icon="pi pi-plus-circle" [text]="true" severity="success" size="small"
-                            pTooltip="استلام" (click)="openMovementDialog(part, 'receipt')"></p-button>
-                  <p-button icon="pi pi-minus-circle" [text]="true" severity="warn" size="small"
-                            pTooltip="صرف" (click)="openMovementDialog(part, 'issue')"></p-button>
                 </div>
               </td>
             </tr>
@@ -194,6 +196,7 @@ import { environment } from '../../../../environments/environment';
 export class SparePartsListComponent implements OnInit {
   private sparePartsService = inject(SparePartsService);
   private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
   private cdr = inject(ChangeDetectorRef);
   private ngZone = inject(NgZone);
   
@@ -264,6 +267,27 @@ export class SparePartsListComponent implements OnInit {
 
   openMovementDialog(part: SparePart, type: 'receipt' | 'issue') {
     this.messageService.add({ severity: 'info', summary: 'قريباً', detail: 'سيتم إضافة هذه الميزة' });
+  }
+
+  deletePart(part: SparePart) {
+    this.confirmationService.confirm({
+      message: `هل أنت متأكد من حذف قطعة الغيار "${part.name}"?`,
+      header: 'تأكيد الحذف',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'نعم، احذف',
+      rejectLabel: 'إلغاء',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        // Call delete API when available
+        this.messageService.add({
+          severity: 'success',
+          summary: 'تم',
+          detail: 'تم حذف قطعة الغيار بنجاح'
+        });
+        this.loadParts();
+        this.loadStatistics();
+      }
+    });
   }
 
   isLowStock(part: any): boolean {

@@ -13,7 +13,8 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { ToastModule } from 'primeng/toast';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TooltipModule } from 'primeng/tooltip';
-import { MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageService, ConfirmationService } from 'primeng/api';
 
 import { MaintenanceService } from '../../../core/services/maintenance.service';
 import { MaintenancePlan } from '../../../core/models/maintenance.model';
@@ -25,11 +26,12 @@ import { environment } from '../../../../environments/environment';
   imports: [
     CommonModule, RouterModule, FormsModule,
     TableModule, ButtonModule, InputTextModule, SelectModule,
-    TagModule, SkeletonModule, ToastModule, ProgressSpinnerModule, TooltipModule
+    TagModule, SkeletonModule, ToastModule, ProgressSpinnerModule, TooltipModule, ConfirmDialogModule
   ],
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
   template: `
     <p-toast position="top-left"></p-toast>
+    <p-confirmDialog></p-confirmDialog>
     
     <div class="page-container animate-fade-in">
       <!-- Page Header -->
@@ -141,16 +143,12 @@ import { environment } from '../../../../environments/environment';
               </td>
               <td>
                 <div class="flex gap-1">
+                  <p-button icon="pi pi-trash" [text]="true" severity="danger" size="small"
+                            pTooltip="حذف" (click)="deletePlan(plan)"></p-button>
+                  <p-button icon="pi pi-pencil" [text]="true" severity="secondary" size="small"
+                            pTooltip="تعديل" [routerLink]="['/maintenance-plans', plan.id, 'edit']"></p-button>
                   <p-button icon="pi pi-eye" [text]="true" severity="info" size="small"
                             pTooltip="عرض" [routerLink]="['/maintenance-plans', plan.id]"></p-button>
-                  <p-button icon="pi pi-pencil" [text]="true" severity="warn" size="small"
-                            pTooltip="تعديل" [routerLink]="['/maintenance-plans', plan.id, 'edit']"></p-button>
-                  <p-button icon="pi pi-calendar-plus" [text]="true" severity="success" size="small"
-                            pTooltip="توليد جداول" (click)="generateSchedules(plan)"></p-button>
-                  <p-button [icon]="getIsActive(plan) ? 'pi pi-pause' : 'pi pi-play'" 
-                            [text]="true" [severity]="getIsActive(plan) ? 'secondary' : 'success'" size="small"
-                            [pTooltip]="getIsActive(plan) ? 'تعطيل' : 'تفعيل'" 
-                            (click)="toggleActive(plan)"></p-button>
                 </div>
               </td>
             </tr>
@@ -182,6 +180,7 @@ import { environment } from '../../../../environments/environment';
 export class MaintenancePlansListComponent implements OnInit {
   private maintenanceService = inject(MaintenanceService);
   private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
   private cdr = inject(ChangeDetectorRef);
   private ngZone = inject(NgZone);
   
@@ -267,6 +266,38 @@ export class MaintenancePlansListComponent implements OnInit {
 
   generateSchedules(plan: MaintenancePlan) {
     this.messageService.add({ severity: 'info', summary: 'قريباً', detail: 'سيتم إضافة هذه الميزة' });
+  }
+
+  deletePlan(plan: MaintenancePlan) {
+    this.confirmationService.confirm({
+      message: `هل أنت متأكد من حذف خطة الصيانة "${plan.name}"?`,
+      header: 'تأكيد الحذف',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'نعم، احذف',
+      rejectLabel: 'إلغاء',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        this.maintenanceService.deletePlan(plan.id).subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'تم',
+              detail: 'تم حذف خطة الصيانة بنجاح'
+            });
+            this.loadPlans();
+            this.loadStats();
+          },
+          error: (error) => {
+            console.error('Error:', error);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'خطأ',
+              detail: 'فشل في حذف خطة الصيانة'
+            });
+          }
+        });
+      }
+    });
   }
 
   toggleActive(plan: MaintenancePlan) {

@@ -96,6 +96,10 @@ export class MaintenanceService {
     return this.api.get<ApiResponse<MaintenanceStatistics>>(`${this.requestsEndpoint}/statistics/${businessId}`);
   }
 
+  deleteRequest(id: string): Observable<ApiResponse<void>> {
+    return this.api.delete<ApiResponse<void>>(`${this.requestsEndpoint}/${id}`);
+  }
+
   // ═══════════════════════════════════════════════════════════════
   // Work Orders
   // ═══════════════════════════════════════════════════════════════
@@ -149,5 +153,9 @@ export class MaintenanceService {
 
   updateWorkOrderStatus(id: string, status: string): Observable<ApiResponse<WorkOrder>> {
     return this.api.put<ApiResponse<WorkOrder>>(`${this.workOrdersEndpoint}/${id}`, { status });
+  }
+
+  deleteWorkOrder(id: string): Observable<ApiResponse<void>> {
+    return this.api.delete<ApiResponse<void>>(`${this.workOrdersEndpoint}/${id}`);
   }
 }

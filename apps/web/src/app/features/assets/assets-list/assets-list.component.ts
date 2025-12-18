@@ -14,7 +14,8 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { ToastModule } from 'primeng/toast';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TooltipModule } from 'primeng/tooltip';
-import { MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageService, ConfirmationService } from 'primeng/api';
 
 import { AssetsService } from '../../../core/services/assets.service';
 import { AssetCategory, AssetQueryParams } from '../../../core/models/asset.model';
@@ -36,11 +37,13 @@ import { environment } from '../../../../environments/environment';
     SkeletonModule,
     ToastModule,
     ProgressSpinnerModule,
-    TooltipModule
+    TooltipModule,
+    ConfirmDialogModule
   ],
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
   template: `
     <p-toast position="top-left"></p-toast>
+    <p-confirmDialog></p-confirmDialog>
     
     <div class="page-container animate-fade-in">
       <!-- Page Header -->
@@ -186,7 +189,7 @@ import { environment } from '../../../../environments/environment';
                   <p-button icon="pi pi-pencil" [text]="true" severity="warn" size="small"
                             pTooltip="تعديل" [routerLink]="['/assets', asset.id, 'edit']"></p-button>
                   <p-button icon="pi pi-trash" [text]="true" severity="danger" size="small"
-                            pTooltip="حذف" (click)="deleteAsset(asset)"></p-button>
+                            pTooltip="حذف" (click)="confirmDelete(asset)"></p-button>
                 </div>
               </td>
             </tr>
@@ -225,6 +228,7 @@ import { environment } from '../../../../environments/environment';
 export class AssetsListComponent implements OnInit {
   private assetsService = inject(AssetsService);
   private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
   private cdr = inject(ChangeDetectorRef);
   private ngZone = inject(NgZone);
   
@@ -342,28 +346,50 @@ export class AssetsListComponent implements OnInit {
     }, 300);
   }
 
+  confirmDelete(asset: any) {
+    this.confirmationService.confirm({
+      message: `هل أنت متأكد من حذف الأصل "${asset.name}"؟`,
+      header: 'تأكيد الحذف',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'نعم، احذف',
+      rejectLabel: 'إلغاء',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        this.deleteAsset(asset);
+      }
+    });
+  }
+
   deleteAsset(asset: any) {
-    if (confirm(`هل أنت متأكد من حذف الأصل "${asset.name}"؟`)) {
-      this.assetsService.deleteAsset(asset.id).subscribe({
-        next: () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'تم',
-            detail: 'تم حذف الأصل بنجاح'
-          });
-          this.loadAssets();
-          this.loadStatistics();
-        },
-        error: (error) => {
-          console.error('Error deleting asset:', error);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'خطأ',
-            detail: 'فشل في حذف الأصل'
-          });
+    this.assetsService.deleteAsset(asset.id).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'تم',
+          detail: 'تم حذف الأصل بنجاح'
+        });
+        this.loadAssets();
+        this.loadStatistics();
+      },
+      error: (error) => {
+        console.error('Error deleting asset:', error);
+        
+        let errorMessage = 'فشل في حذف الأصل';
+        if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.status === 404) {
+          errorMessage = 'الأصل غير موجود';
+        } else if (error.status === 409) {
+          errorMessage = 'لا يمكن حذف الأصل لوجود عمليات مرتبطة به';
         }
-      });
-    }
+        
+        this.messageService.add({
+          severity: 'error',
+          summary: 'خطأ',
+          detail: errorMessage
+        });
+      }
+    });
   }
 
   // Helper methods
