@@ -36,14 +36,14 @@ import { environment } from '../../../../environments/environment';
     <div class="page-container animate-fade-in">
       <!-- Page Header -->
       <div class="page-header">
-        <div>
-          <h2>قطع الغيار</h2>
-          <p>إدارة مخزون قطع الغيار</p>
-        </div>
         <a routerLink="/spare-parts/new" class="btn-add-primary">
           <i class="pi pi-plus"></i>
           <span>إضافة قطعة غيار</span>
         </a>
+        <div>
+          <h2>قطع الغيار</h2>
+          <p>إدارة مخزون قطع الغيار</p>
+        </div>
       </div>
 
       <!-- Statistics Cards -->
