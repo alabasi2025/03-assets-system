@@ -36,14 +36,14 @@ import { environment } from '../../../../environments/environment';
     <div class="page-container animate-fade-in">
       <!-- Page Header -->
       <div class="page-header">
-        <a routerLink="/maintenance-requests/new" class="btn-add-warning">
-          <i class="pi pi-wrench"></i>
-          <span>طلب صيانة جديد</span>
-        </a>
         <div>
           <h2>طلبات الصيانة الطارئة</h2>
           <p>إدارة طلبات الصيانة التصحيحية والطارئة</p>
         </div>
+        <a routerLink="/maintenance-requests/new" class="btn-add-warning">
+          <i class="pi pi-wrench"></i>
+          <span>طلب صيانة جديد</span>
+        </a>
       </div>
 
       <!-- Statistics Cards -->

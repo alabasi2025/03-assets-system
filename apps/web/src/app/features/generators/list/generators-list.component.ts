@@ -25,14 +25,14 @@ import { GeneratorsService, Generator } from '../../../core/services/generators.
     
     <div class="p-4">
       <div class="flex justify-between items-center mb-4">
-        <a routerLink="/generators/new" class="btn-add-purple">
-          <i class="pi pi-plus"></i>
-          <span>إضافة مولد جديد</span>
-        </a>
         <div>
           <h2 class="text-2xl font-bold text-gray-800">إدارة المولدات</h2>
           <p class="text-gray-600">عرض وإدارة المولدات الكهربائية</p>
         </div>
+        <a routerLink="/generators/new" class="btn-add-purple">
+          <i class="pi pi-plus"></i>
+          <span>إضافة مولد جديد</span>
+        </a>
       </div>
 
       <!-- Stats Cards -->

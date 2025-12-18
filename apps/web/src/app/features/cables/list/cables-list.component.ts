@@ -20,14 +20,14 @@ import { CablesService, Cable } from '../../../core/services/cables.service';
     <p-confirmDialog></p-confirmDialog>
     <div class="p-4">
       <div class="flex justify-between items-center mb-4">
-        <a routerLink="/cables/new" class="btn-add-warning">
-          <i class="pi pi-plus"></i>
-          <span>إضافة كابل جديد</span>
-        </a>
         <div>
           <h2 class="text-2xl font-bold text-gray-800">إدارة الكابلات</h2>
           <p class="text-gray-600">عرض وإدارة كابلات الشبكة الكهربائية</p>
         </div>
+        <a routerLink="/cables/new" class="btn-add-warning">
+          <i class="pi pi-plus"></i>
+          <span>إضافة كابل جديد</span>
+        </a>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">

@@ -25,14 +25,14 @@ import { StationsService, Station } from '../../../core/services/stations.servic
     
     <div class="p-4">
       <div class="flex justify-between items-center mb-4">
-        <a routerLink="/stations/new" class="btn-add-primary">
-          <i class="pi pi-plus"></i>
-          <span>إضافة محطة جديدة</span>
-        </a>
         <div>
           <h2 class="text-2xl font-bold text-gray-800">إدارة المحطات</h2>
           <p class="text-gray-600">عرض وإدارة محطات التوليد والتوزيع</p>
         </div>
+        <a routerLink="/stations/new" class="btn-add-primary">
+          <i class="pi pi-plus"></i>
+          <span>إضافة محطة جديدة</span>
+        </a>
       </div>
 
       <!-- Stats Cards -->
@@ -95,9 +95,6 @@ import { StationsService, Station } from '../../../core/services/stations.servic
               </td>
               <td>
                 <div class="flex gap-2">
-                  <a [routerLink]="['/stations', station.id]" class="p-button p-button-info p-button-sm p-button-text">
-                    <i class="pi pi-eye"></i>
-                  </a>
                   <a [routerLink]="['/stations', station.id, 'edit']" class="p-button p-button-warning p-button-sm p-button-text">
                     <i class="pi pi-pencil"></i>
                   </a>

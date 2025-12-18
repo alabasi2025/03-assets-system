@@ -25,14 +25,14 @@ import { SolarStationsService, SolarStation } from '../../../core/services/solar
     
     <div class="p-4">
       <div class="flex justify-between items-center mb-4">
-        <a routerLink="/solar-stations/new" class="btn-add-success">
-          <i class="pi pi-sun"></i>
-          <span>إضافة محطة شمسية</span>
-        </a>
         <div>
           <h2 class="text-2xl font-bold text-gray-800">إدارة محطات الطاقة الشمسية</h2>
           <p class="text-gray-600">عرض وإدارة محطات الطاقة الشمسية والألواح والعاكسات</p>
         </div>
+        <a routerLink="/solar-stations/new" class="btn-add-success">
+          <i class="pi pi-sun"></i>
+          <span>إضافة محطة شمسية</span>
+        </a>
       </div>
 
       <!-- Stats Cards -->
@@ -95,9 +95,6 @@ import { SolarStationsService, SolarStation } from '../../../core/services/solar
               </td>
               <td>
                 <div class="flex gap-2">
-                  <a [routerLink]="['/solar-stations', station.id]" class="p-button p-button-info p-button-sm p-button-text">
-                    <i class="pi pi-eye"></i>
-                  </a>
                   <a [routerLink]="['/solar-stations', station.id, 'edit']" class="p-button p-button-warning p-button-sm p-button-text">
                     <i class="pi pi-pencil"></i>
                   </a>
