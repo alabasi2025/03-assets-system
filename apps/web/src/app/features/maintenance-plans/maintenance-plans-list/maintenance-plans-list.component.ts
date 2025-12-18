@@ -36,12 +36,14 @@ import { environment } from '../../../../environments/environment';
     <div class="page-container animate-fade-in">
       <!-- Page Header -->
       <div class="page-header">
+        <a routerLink="/maintenance-plans/new" class="btn-add-success">
+          <i class="pi pi-calendar-plus"></i>
+          <span>إضافة خطة صيانة</span>
+        </a>
         <div>
           <h2>خطط الصيانة الوقائية</h2>
           <p>إدارة جداول الصيانة الدورية للأصول</p>
         </div>
-        <p-button label="إضافة خطة صيانة" icon="pi pi-plus" 
-                  severity="success" [routerLink]="['/maintenance-plans/new']"></p-button>
       </div>
 
       <!-- Statistics Cards -->

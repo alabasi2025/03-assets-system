@@ -44,6 +44,7 @@ html, body {
 
 .page-header {
   display: flex;
+  flex-direction: row-reverse;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
@@ -330,4 +331,177 @@ html, body {
 
 .low-stock-row:hover {
   background: rgba(239, 68, 68, 0.1) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Professional Add Buttons
+   ═══════════════════════════════════════════════════════════════ */
+
+.btn-add-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border: none;
+  border-radius: 0.625rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+  text-decoration: none;
+}
+
+.btn-add-primary:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+  transform: translateY(-2px);
+  color: white;
+}
+
+.btn-add-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+}
+
+.btn-add-primary i {
+  font-size: 1rem;
+}
+
+/* Success Variant */
+.btn-add-success {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  border: none;
+  border-radius: 0.625rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4);
+  text-decoration: none;
+}
+
+.btn-add-success:hover {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5);
+  transform: translateY(-2px);
+  color: white;
+}
+
+.btn-add-success:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
+}
+
+.btn-add-success i {
+  font-size: 1rem;
+}
+
+/* Orange Variant */
+.btn-add-warning {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  border: none;
+  border-radius: 0.625rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4);
+  text-decoration: none;
+}
+
+.btn-add-warning:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.5);
+  transform: translateY(-2px);
+  color: white;
+}
+
+.btn-add-warning:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.4);
+}
+
+.btn-add-warning i {
+  font-size: 1rem;
+}
+
+/* Purple Variant */
+.btn-add-purple {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+  border: none;
+  border-radius: 0.625rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);
+  text-decoration: none;
+}
+
+.btn-add-purple:hover {
+  background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
+  transform: translateY(-2px);
+  color: white;
+}
+
+.btn-add-purple:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.4);
+}
+
+.btn-add-purple i {
+  font-size: 1rem;
+}
+
+/* Cyan Variant */
+.btn-add-cyan {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  border: none;
+  border-radius: 0.625rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(6, 182, 212, 0.4);
+  text-decoration: none;
+}
+
+.btn-add-cyan:hover {
+  background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+  box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5);
+  transform: translateY(-2px);
+  color: white;
+}
+
+.btn-add-cyan:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.4);
+}
+
+.btn-add-cyan i {
+  font-size: 1rem;
 }

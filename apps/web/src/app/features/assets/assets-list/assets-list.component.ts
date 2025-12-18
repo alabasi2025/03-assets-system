@@ -48,12 +48,14 @@ import { environment } from '../../../../environments/environment';
     <div class="page-container animate-fade-in">
       <!-- Page Header -->
       <div class="page-header">
+        <a routerLink="/assets/new" class="btn-add-primary">
+          <i class="pi pi-plus"></i>
+          <span>إضافة أصل جديد</span>
+        </a>
         <div>
           <h2>إدارة الأصول</h2>
           <p>عرض وإدارة جميع الأصول المسجلة في النظام</p>
         </div>
-        <p-button label="إضافة أصل جديد" icon="pi pi-plus" 
-                  severity="success" [routerLink]="['/assets/new']"></p-button>
       </div>
 
       <!-- Statistics Cards -->
