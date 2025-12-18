@@ -430,8 +430,8 @@ export class CategoriesListComponent implements OnInit {
   loadTree() {
     this.loading = true;
     this.categoriesService.getTree().subscribe({
-      next: (tree) => {
-        this.treeNodes = this.convertToTreeNodes(tree);
+      next: (response) => {
+        this.treeNodes = this.convertToTreeNodes(response.data || []);
         this.loading = false;
       },
       error: () => {

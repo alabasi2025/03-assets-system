@@ -68,8 +68,9 @@ export class CategoriesService {
     return this.http.get<{ data: Category }>(`${this.apiUrl}/${id}`);
   }
 
-  getTree(): Observable<Category[]> {
-    return this.http.get<Category[]>(`${this.apiUrl}/tree`);
+  getTree(businessId?: string): Observable<{ data: Category[] }> {
+    const id = businessId || environment.defaultBusinessId;
+    return this.http.get<{ data: Category[] }>(`${this.apiUrl}/tree/${id}`);
   }
 
   getStatistics(): Observable<CategoryStatistics> {
