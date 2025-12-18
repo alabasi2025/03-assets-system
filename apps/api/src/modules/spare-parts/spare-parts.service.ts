@@ -209,6 +209,20 @@ export class SparePartsService {
     return part;
   }
 
+  async delete(id: string) {
+    const part = await this.prisma.spare_parts.findUnique({
+      where: { id },
+    });
+
+    if (!part) {
+      throw new NotFoundException('Spare part not found');
+    }
+
+    return this.prisma.spare_parts.delete({
+      where: { id },
+    });
+  }
+
   async update(id: string, dto: UpdateSparePartDto) {
     const existing = await this.prisma.spare_parts.findUnique({
       where: { id },
