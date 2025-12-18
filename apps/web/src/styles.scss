@@ -297,6 +297,21 @@ html, body {
   width: 100%;
 }
 
+.p-select-overlay {
+  z-index: 9999 !important;
+}
+
+.p-dropdown-panel,
+.p-select-panel {
+  z-index: 9999 !important;
+}
+
+/* Overlay Panel */
+.p-overlay,
+.p-component-overlay {
+  z-index: 9999 !important;
+}
+
 /* Toast */
 .p-toast {
   direction: rtl;
