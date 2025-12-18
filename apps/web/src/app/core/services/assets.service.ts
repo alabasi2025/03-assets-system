@@ -18,9 +18,9 @@ import {
   providedIn: 'root'
 })
 export class AssetsService {
-  private endpoint = '/api/v1/assets';
-  private categoriesEndpoint = '/api/v1/asset-categories';
-  private depreciationEndpoint = '/api/v1/depreciation';
+  private endpoint = '/assets';
+  private categoriesEndpoint = '/asset-categories';
+  private depreciationEndpoint = '/depreciation';
 
   constructor(private api: ApiService) {}
 

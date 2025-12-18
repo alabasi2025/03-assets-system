@@ -11,17 +11,15 @@ import { environment } from '../../../../environments/environment';
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
   template: `
-    <div class="container mx-auto p-6">
+    <div class="page-container">
       <!-- Header -->
-      <div class="flex justify-between items-center mb-6">
+      <div class="page-header">
         <div>
-          <h1 class="text-2xl font-bold text-gray-800">طلبات الصيانة الطارئة</h1>
-          <p class="text-gray-600">إدارة طلبات الصيانة التصحيحية والطارئة</p>
+          <h1>طلبات الصيانة الطارئة</h1>
+          <p>إدارة طلبات الصيانة التصحيحية والطارئة</p>
         </div>
-        <button 
-          routerLink="/maintenance-requests/new"
-          class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 flex items-center gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button routerLink="/maintenance-requests/new" class="btn btn-danger">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
           </svg>
           طلب صيانة جديد
@@ -29,34 +27,51 @@ import { environment } from '../../../../environments/environment';
       </div>
 
       <!-- Statistics Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6" *ngIf="statistics">
-        <div class="bg-white rounded-lg shadow p-4 border-r-4 border-red-500">
-          <div class="text-sm text-gray-500">طلبات جديدة</div>
-          <div class="text-2xl font-bold text-red-600">{{ getStatusCount('new') }}</div>
+      <div class="stats-grid" *ngIf="statistics">
+        <div class="stat-card border-red">
+          <div class="stat-icon red">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+          </div>
+          <div class="stat-value red">{{ getStatusCount('new') }}</div>
+          <div class="stat-label">طلبات جديدة</div>
         </div>
-        <div class="bg-white rounded-lg shadow p-4 border-r-4 border-yellow-500">
-          <div class="text-sm text-gray-500">قيد التنفيذ</div>
-          <div class="text-2xl font-bold text-yellow-600">{{ getStatusCount('in_progress') }}</div>
+        <div class="stat-card border-yellow">
+          <div class="stat-icon yellow">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div class="stat-value yellow">{{ getStatusCount('in_progress') }}</div>
+          <div class="stat-label">قيد التنفيذ</div>
         </div>
-        <div class="bg-white rounded-lg shadow p-4 border-r-4 border-blue-500">
-          <div class="text-sm text-gray-500">معينة</div>
-          <div class="text-2xl font-bold text-blue-600">{{ getStatusCount('assigned') }}</div>
+        <div class="stat-card border-blue">
+          <div class="stat-icon blue">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+          </div>
+          <div class="stat-value blue">{{ getStatusCount('assigned') }}</div>
+          <div class="stat-label">معينة</div>
         </div>
-        <div class="bg-white rounded-lg shadow p-4 border-r-4 border-green-500">
-          <div class="text-sm text-gray-500">مكتملة</div>
-          <div class="text-2xl font-bold text-green-600">{{ getStatusCount('completed') }}</div>
+        <div class="stat-card border-green">
+          <div class="stat-icon green">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div class="stat-value green">{{ getStatusCount('completed') }}</div>
+          <div class="stat-label">مكتملة</div>
         </div>
       </div>
 
       <!-- Filters -->
-      <div class="bg-white rounded-lg shadow p-4 mb-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">الحالة</label>
-            <select 
-              [(ngModel)]="filters.status"
-              (ngModelChange)="loadRequests()"
-              class="w-full border rounded-lg px-3 py-2">
+      <div class="filters-card">
+        <div class="filters-grid">
+          <div class="filter-group">
+            <label>الحالة</label>
+            <select [(ngModel)]="filters.status" (ngModelChange)="loadRequests()" class="form-control">
               <option value="">جميع الحالات</option>
               <option value="new">جديد</option>
               <option value="assigned">معين</option>
@@ -66,12 +81,9 @@ import { environment } from '../../../../environments/environment';
               <option value="cancelled">ملغي</option>
             </select>
           </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">الأولوية</label>
-            <select 
-              [(ngModel)]="filters.priority"
-              (ngModelChange)="loadRequests()"
-              class="w-full border rounded-lg px-3 py-2">
+          <div class="filter-group">
+            <label>الأولوية</label>
+            <select [(ngModel)]="filters.priority" (ngModelChange)="loadRequests()" class="form-control">
               <option value="">جميع الأولويات</option>
               <option value="critical">حرجة</option>
               <option value="high">عالية</option>
@@ -83,67 +95,51 @@ import { environment } from '../../../../environments/environment';
       </div>
 
       <!-- Requests Table -->
-      <div class="bg-white rounded-lg shadow overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+      <div class="table-card">
+        <div class="table-container">
+          <table>
+            <thead>
               <tr>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">رقم الطلب</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">العنوان</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الأصل</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">النوع</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الأولوية</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الحالة</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">تاريخ الإبلاغ</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">إجراءات</th>
+                <th>رقم الطلب</th>
+                <th>العنوان</th>
+                <th>الأصل</th>
+                <th>النوع</th>
+                <th>الأولوية</th>
+                <th>الحالة</th>
+                <th>تاريخ الإبلاغ</th>
+                <th>إجراءات</th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <tr *ngFor="let request of requests" class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {{ request.requestNumber }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ request.title }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {{ request.asset?.name || '-' }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {{ getTypeLabel(request.requestType) }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span [class]="getPriorityClass(request.priority)">
+            <tbody>
+              <tr *ngFor="let request of requests">
+                <td class="font-medium request-number">{{ getRequestNumber(request) }}</td>
+                <td>{{ request.title }}</td>
+                <td class="text-muted">{{ request.asset?.name || '-' }}</td>
+                <td>{{ getTypeLabel(getRequestType(request)) }}</td>
+                <td>
+                  <span [class]="'badge ' + getPriorityClass(request.priority)">
                     {{ getPriorityLabel(request.priority) }}
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span [class]="getStatusClass(request.status)">
+                <td>
+                  <span [class]="'badge ' + getStatusClass(request.status)">
                     {{ getStatusLabel(request.status) }}
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {{ request.reportedAt | date:'yyyy-MM-dd HH:mm' }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                  <div class="flex gap-2">
-                    <button 
-                      [routerLink]="['/maintenance-requests', request.id]"
-                      class="text-blue-600 hover:text-blue-800">
-                      عرض
-                    </button>
-                    <button 
-                      *ngIf="request.status === 'new'"
-                      (click)="createWorkOrder(request)"
-                      class="text-green-600 hover:text-green-800">
-                      إنشاء أمر عمل
-                    </button>
+                <td class="text-muted">{{ getReportedAt(request) | date:'yyyy-MM-dd HH:mm' }}</td>
+                <td>
+                  <div class="action-buttons">
+                    <button [routerLink]="['/maintenance-requests', request.id]" class="action-btn view">عرض</button>
+                    <button *ngIf="request.status === 'new'" (click)="createWorkOrder(request)" class="action-btn edit">إنشاء أمر عمل</button>
                   </div>
                 </td>
               </tr>
               <tr *ngIf="requests.length === 0">
-                <td colspan="8" class="px-6 py-12 text-center text-gray-500">
-                  لا توجد طلبات صيانة
+                <td colspan="8" class="empty-state">
+                  <svg width="64" height="64" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                  </svg>
+                  <p>لا توجد طلبات صيانة</p>
                 </td>
               </tr>
             </tbody>
@@ -151,28 +147,255 @@ import { environment } from '../../../../environments/environment';
         </div>
 
         <!-- Pagination -->
-        <div class="bg-gray-50 px-6 py-3 flex justify-between items-center" *ngIf="meta">
-          <div class="text-sm text-gray-500">
+        <div class="pagination" *ngIf="meta && meta.total > 0">
+          <div class="pagination-info">
             عرض {{ (meta.page - 1) * meta.limit + 1 }} - {{ Math.min(meta.page * meta.limit, meta.total) }} من {{ meta.total }}
           </div>
-          <div class="flex gap-2">
-            <button 
-              (click)="goToPage(meta.page - 1)"
-              [disabled]="meta.page <= 1"
-              class="px-3 py-1 border rounded disabled:opacity-50">
-              السابق
-            </button>
-            <button 
-              (click)="goToPage(meta.page + 1)"
-              [disabled]="meta.page >= meta.totalPages"
-              class="px-3 py-1 border rounded disabled:opacity-50">
-              التالي
-            </button>
+          <div class="pagination-buttons">
+            <button (click)="goToPage(meta.page - 1)" [disabled]="meta.page <= 1" class="btn btn-secondary btn-sm">السابق</button>
+            <button (click)="goToPage(meta.page + 1)" [disabled]="meta.page >= meta.totalPages" class="btn btn-secondary btn-sm">التالي</button>
           </div>
         </div>
       </div>
     </div>
-  `
+  `,
+  styles: [`
+    .page-container { padding: 0; }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    
+    .page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1e3a5f;
+      margin-bottom: 4px;
+    }
+    
+    .page-header p { color: #6b7280; font-size: 0.95rem; }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    }
+    
+    .btn-secondary { background: #f3f4f6; color: #374151; }
+    .btn-secondary:hover { background: #e5e7eb; }
+    .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-sm { padding: 6px 14px; font-size: 0.85rem; }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+      border-right: 4px solid transparent;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+    
+    .stat-card.border-red { border-right-color: #ef4444; }
+    .stat-card.border-yellow { border-right-color: #f59e0b; }
+    .stat-card.border-blue { border-right-color: #3b82f6; }
+    .stat-card.border-green { border-right-color: #22c55e; }
+    
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    
+    .stat-icon.red { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+    .stat-icon.yellow { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+    .stat-icon.blue { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+    .stat-icon.green { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+    
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1e3a5f;
+      margin-bottom: 4px;
+    }
+    
+    .stat-value.red { color: #ef4444; }
+    .stat-value.yellow { color: #f59e0b; }
+    .stat-value.blue { color: #3b82f6; }
+    .stat-value.green { color: #22c55e; }
+    
+    .stat-label { font-size: 0.85rem; color: #6b7280; }
+    
+    .filters-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    
+    .filter-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .table-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    
+    .table-container { overflow-x: auto; }
+    
+    table { width: 100%; border-collapse: collapse; }
+    
+    table th {
+      background: #f8fafc;
+      padding: 14px 16px;
+      text-align: right;
+      font-weight: 600;
+      color: #475569;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    
+    table td {
+      padding: 16px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #334155;
+      font-size: 0.9rem;
+    }
+    
+    table tr:hover { background: #f8fafc; }
+    table tr:last-child td { border-bottom: none; }
+    
+    .font-medium { font-weight: 600; color: #1e3a5f; }
+    .text-muted { color: #6b7280; }
+    
+    .badge {
+      display: inline-flex;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    
+    .badge-danger { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
+    .badge-warning { background: rgba(245, 158, 11, 0.1); color: #d97706; }
+    .badge-info { background: rgba(59, 130, 246, 0.1); color: #2563eb; }
+    .badge-success { background: rgba(34, 197, 94, 0.1); color: #16a34a; }
+    .badge-secondary { background: rgba(107, 114, 128, 0.1); color: #4b5563; }
+    .badge-purple { background: rgba(168, 85, 247, 0.1); color: #9333ea; }
+    .badge-orange { background: rgba(249, 115, 22, 0.1); color: #ea580c; }
+    
+    .action-buttons { display: flex; gap: 8px; }
+    
+    .action-btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    
+    .action-btn.view { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+    .action-btn.edit { background: rgba(34, 197, 94, 0.1); color: #16a34a; }
+    .action-btn:hover { transform: scale(1.05); }
+    
+    .request-number {
+      background: rgba(239, 68, 68, 0.08);
+      padding: 4px 10px !important;
+      border-radius: 6px;
+      display: inline-block;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      color: #dc2626;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px !important;
+      color: #9ca3af;
+    }
+    
+    .empty-state svg { margin: 0 auto 16px; color: #d1d5db; }
+    .empty-state p { font-size: 1rem; color: #6b7280; }
+    
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-top: 1px solid #e5e7eb;
+      background: #f9fafb;
+    }
+    
+    .pagination-info { color: #6b7280; font-size: 0.85rem; }
+    .pagination-buttons { display: flex; gap: 8px; }
+  `]
 })
 export class MaintenanceRequestsListComponent implements OnInit {
   private maintenanceService = inject(MaintenanceService);
@@ -227,7 +450,6 @@ export class MaintenanceRequestsListComponent implements OnInit {
 
   createWorkOrder(request: MaintenanceRequest) {
     // Navigate to work order creation with request ID
-    // router.navigate(['/work-orders/new'], { queryParams: { requestId: request.id } });
   }
 
   getTypeLabel(type: string): string {
@@ -235,6 +457,9 @@ export class MaintenanceRequestsListComponent implements OnInit {
       breakdown: 'عطل',
       malfunction: 'خلل',
       damage: 'تلف',
+      corrective: 'تصحيحية',
+      preventive: 'وقائية',
+      emergency: 'طارئة',
       other: 'أخرى',
     };
     return labels[type] || type;
@@ -242,12 +467,12 @@ export class MaintenanceRequestsListComponent implements OnInit {
 
   getPriorityClass(priority: string): string {
     const classes: Record<string, string> = {
-      critical: 'px-2 py-1 text-xs rounded-full bg-red-100 text-red-800',
-      high: 'px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-800',
-      medium: 'px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800',
-      low: 'px-2 py-1 text-xs rounded-full bg-green-100 text-green-800',
+      critical: 'badge-danger',
+      high: 'badge-orange',
+      medium: 'badge-warning',
+      low: 'badge-success',
     };
-    return classes[priority] || classes['medium'];
+    return classes[priority] || 'badge-warning';
   }
 
   getPriorityLabel(priority: string): string {
@@ -262,14 +487,14 @@ export class MaintenanceRequestsListComponent implements OnInit {
 
   getStatusClass(status: string): string {
     const classes: Record<string, string> = {
-      new: 'px-2 py-1 text-xs rounded-full bg-red-100 text-red-800',
-      assigned: 'px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800',
-      in_progress: 'px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800',
-      pending_parts: 'px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800',
-      completed: 'px-2 py-1 text-xs rounded-full bg-green-100 text-green-800',
-      cancelled: 'px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800',
+      new: 'badge-danger',
+      assigned: 'badge-info',
+      in_progress: 'badge-warning',
+      pending_parts: 'badge-purple',
+      completed: 'badge-success',
+      cancelled: 'badge-secondary',
     };
-    return classes[status] || classes['new'];
+    return classes[status] || 'badge-danger';
   }
 
   getStatusLabel(status: string): string {
@@ -282,5 +507,19 @@ export class MaintenanceRequestsListComponent implements OnInit {
       cancelled: 'ملغي',
     };
     return labels[status] || status;
+  }
+
+  // Helper methods to handle both snake_case and camelCase
+  getRequestNumber(request: any): string {
+    return request.request_number || request.requestNumber || '-';
+  }
+
+  getRequestType(request: any): string {
+    return request.request_type || request.requestType || 'other';
+  }
+
+  getReportedAt(request: any): Date | null {
+    const date = request.reported_at || request.reportedAt;
+    return date ? new Date(date) : null;
   }
 }

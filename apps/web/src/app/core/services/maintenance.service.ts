@@ -19,9 +19,9 @@ import {
   providedIn: 'root'
 })
 export class MaintenanceService {
-  private plansEndpoint = '/api/v1/maintenance-plans';
-  private requestsEndpoint = '/api/v1/maintenance-requests';
-  private workOrdersEndpoint = '/api/v1/work-orders';
+  private plansEndpoint = '/maintenance-plans';
+  private requestsEndpoint = '/maintenance-requests';
+  private workOrdersEndpoint = '/work-orders';
 
   constructor(private api: ApiService) {}
 

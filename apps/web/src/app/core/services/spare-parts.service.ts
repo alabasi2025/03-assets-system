@@ -17,7 +17,7 @@ import {
   providedIn: 'root'
 })
 export class SparePartsService {
-  private endpoint = '/api/v1/spare-parts';
+  private endpoint = '/spare-parts';
 
   constructor(private api: ApiService) {}
 
