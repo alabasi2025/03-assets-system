@@ -41,6 +41,12 @@ import { InventoryModule } from '../modules/inventory/inventory.module';
 // Feature Modules - Readings
 import { ReadingsModule } from '../modules/readings/readings.module';
 
+// Feature Modules - Migration Plans
+import { MigrationPlansModule } from '../modules/migration-plans/migration-plans.module';
+
+// Feature Modules - Replacements
+import { ReplacementsModule } from '../modules/replacements/replacements.module';
+
 // Health Check
 import { HealthModule } from '../modules/health/health.module';
 
@@ -90,6 +96,12 @@ import { HealthModule } from '../modules/health/health.module';
     
     // Readings
     ReadingsModule,
+    
+    // Migration Plans
+    MigrationPlansModule,
+    
+    // Replacements
+    ReplacementsModule,
   ],
   controllers: [AppController],
   providers: [

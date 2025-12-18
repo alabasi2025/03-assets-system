@@ -310,6 +310,8 @@ model work_orders {
   asset             assets?               @relation(fields: [asset_id], references: [id])
   technician        technicians?          @relation("AssignedTechnician", fields: [assigned_to], references: [id])
   records           maintenance_records[]
+  component_replacements component_replacements[]
+  damaged_meter_replacements damaged_meter_replacements[]
 
   @@unique([business_id, work_order_number])
   @@index([business_id])
@@ -479,6 +481,7 @@ model stations {
   transformers      transformers[]
   distribution_boxes distribution_boxes[]
   inventories       asset_inventory[]
+  migration_plans   migration_plans[]
 
   @@unique([business_id, code])
   @@index([business_id])
@@ -1076,6 +1079,7 @@ model technicians {
   contractor        contractors? @relation(fields: [contractor_id], references: [id])
   work_orders       work_orders[] @relation("AssignedTechnician")
   performances      technician_performance[]
+  component_replacements component_replacements[]
 
   @@unique([business_id, technician_code])
   @@index([business_id])
@@ -1202,3 +1206,199 @@ model asset_inventory_items {
 
 // ═══════════════════════════════════════════════════════════════
 // Generator Readings (قراءات المولدات)
+
+
+// ═══════════════════════════════════════════════════════════════
+// خطط الترحيل
+// ═══════════════════════════════════════════════════════════════
+
+model migration_plans {
+  id                String   @id @default(uuid()) @db.Uuid
+  business_id       String?  @db.Uuid
+  station_id        String?  @db.Uuid
+  
+  // التعريف
+  plan_code         String   @unique @db.VarChar(20)
+  plan_name         String?  @db.VarChar(200)
+  description       String?  @db.Text
+  
+  // سياسة التكلفة
+  cost_policy       String   @default("full_cost") @db.VarChar(30) // free, meter_only, full_cost, partial
+  cost_percentage   Decimal  @default(100) @db.Decimal(5, 2)
+  
+  // الإحصائيات
+  total_customers   Int      @default(0)
+  total_wire_old    Decimal  @default(0) @db.Decimal(10, 2)
+  total_wire_new    Decimal  @default(0) @db.Decimal(10, 2)
+  total_wire_saved  Decimal  @default(0) @db.Decimal(10, 2)
+  total_cost        Decimal  @default(0) @db.Decimal(15, 2)
+  
+  // الحالة
+  status            String   @default("draft") @db.VarChar(20) // draft, approved, in_progress, completed
+  planned_start_date DateTime? @db.Date
+  planned_end_date  DateTime? @db.Date
+  actual_start_date DateTime? @db.Date
+  actual_end_date   DateTime? @db.Date
+  
+  // الموافقات
+  created_by        String?  @db.Uuid
+  approved_by       String?  @db.Uuid
+  approved_at       DateTime?
+  
+  is_deleted        Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  station           stations? @relation(fields: [station_id], references: [id])
+  items             migration_plan_items[]
+
+  @@index([business_id])
+  @@index([station_id])
+  @@index([status])
+  @@map("migration_plans")
+}
+
+model migration_plan_items {
+  id                String   @id @default(uuid()) @db.Uuid
+  plan_id           String   @db.Uuid
+  customer_id       String   @db.Uuid
+  
+  // القياسات
+  old_wire_length   Decimal? @db.Decimal(6, 2)
+  new_wire_length   Decimal? @db.Decimal(6, 2)
+  wire_saved        Decimal? @db.Decimal(6, 2)
+  
+  // التكلفة
+  meter_cost        Decimal? @db.Decimal(15, 2)
+  wire_cost         Decimal? @db.Decimal(15, 2)
+  installation_cost Decimal? @db.Decimal(15, 2)
+  total_cost        Decimal? @db.Decimal(15, 2)
+  customer_share    Decimal? @db.Decimal(15, 2)
+  
+  // الحالة
+  status            String   @default("pending") @db.VarChar(20) // pending, invoiced, paid, work_order_created, migrated
+  
+  // الربط
+  invoice_id        String?  @db.Uuid
+  work_order_id     String?  @db.Uuid
+  
+  // للعدادات المرتجعة
+  old_meter_serial  String?  @db.VarChar(50)
+  old_meter_returned Boolean @default(false)
+  returned_to_fund  Boolean  @default(false)
+  return_date       DateTime? @db.Date
+  
+  is_deleted        Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  plan              migration_plans @relation(fields: [plan_id], references: [id])
+
+  @@index([plan_id])
+  @@index([customer_id])
+  @@index([status])
+  @@map("migration_plan_items")
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// عمليات استبدال المكونات
+// ═══════════════════════════════════════════════════════════════
+
+model component_replacements {
+  id                String   @id @default(uuid()) @db.Uuid
+  business_id       String?  @db.Uuid
+  work_order_id     String?  @db.Uuid
+  customer_id       String?  @db.Uuid
+  technician_id     String?  @db.Uuid
+  
+  // نوع المكون
+  component_type    String   @db.VarChar(50) // meter, breaker, seal
+  
+  // المكون القديم
+  old_serial_number String?  @db.VarChar(100)
+  old_model         String?  @db.VarChar(100)
+  old_condition     String?  @db.VarChar(50) // damaged, malfunction, upgrade
+  old_damage_reason String?  @db.Text
+  
+  // المكون الجديد
+  new_serial_number String?  @db.VarChar(100)
+  new_model         String?  @db.VarChar(100)
+  
+  // الضمان
+  warranty_status   String?  @db.VarChar(50) // under_warranty, out_of_warranty
+  warranty_end_date DateTime? @db.Date
+  
+  // التكلفة
+  is_billable       Boolean  @default(false)
+  component_cost    Decimal? @db.Decimal(15, 2)
+  labor_cost        Decimal? @db.Decimal(15, 2)
+  total_cost        Decimal? @db.Decimal(15, 2)
+  invoice_id        String?  @db.Uuid
+  
+  // التوقيت
+  replacement_date  DateTime? @db.Date
+  replacement_time  String?  @db.VarChar(10)
+  
+  status            String   @default("pending") @db.VarChar(50) // pending, in_progress, completed, cancelled
+  notes             String?  @db.Text
+  
+  is_deleted        Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  work_order        work_orders? @relation(fields: [work_order_id], references: [id])
+  technician        technicians? @relation(fields: [technician_id], references: [id])
+
+  @@index([business_id])
+  @@index([work_order_id])
+  @@index([customer_id])
+  @@index([component_type])
+  @@index([status])
+  @@map("component_replacements")
+}
+
+// طلبات استبدال العداد التالف
+model damaged_meter_replacements {
+  id                    String   @id @default(uuid()) @db.Uuid
+  business_id           String?  @db.Uuid
+  
+  // بيانات العميل والعداد
+  customer_id           String   @db.Uuid
+  old_meter_serial      String?  @db.VarChar(100)
+  new_meter_serial      String?  @db.VarChar(100)
+  
+  // تقدير الاستهلاك
+  avg_daily_consumption Decimal? @db.Decimal(10, 2)
+  missing_days          Int?
+  estimated_consumption Decimal? @db.Decimal(10, 2)
+  estimated_invoice_id  String?  @db.Uuid
+  
+  // تكلفة الاستبدال
+  meter_cost            Decimal? @db.Decimal(15, 2)
+  cost_option           String?  @db.VarChar(50) // full, half, free
+  charged_amount        Decimal? @db.Decimal(15, 2)
+  cost_reason           String?  @db.VarChar(200)
+  replacement_invoice_id String? @db.Uuid
+  
+  // أمر العمل
+  work_order_id         String?  @db.Uuid
+  
+  // الحالة
+  status                String   @default("draft") @db.VarChar(50) // draft, pending_payment, ready_for_installation, in_progress, completed, cancelled
+  
+  // خطوة المعالج الحالية
+  wizard_step           Int      @default(1)
+  
+  created_by            String?  @db.Uuid
+  is_deleted            Boolean  @default(false)
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  work_order            work_orders? @relation(fields: [work_order_id], references: [id])
+
+  @@index([business_id])
+  @@index([customer_id])
+  @@index([status])
+  @@map("damaged_meter_replacements")
+}
