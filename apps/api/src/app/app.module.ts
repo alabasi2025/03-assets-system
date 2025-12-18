@@ -47,6 +47,12 @@ import { MigrationPlansModule } from '../modules/migration-plans/migration-plans
 // Feature Modules - Replacements
 import { ReplacementsModule } from '../modules/replacements/replacements.module';
 
+// Feature Modules - Reports
+import { ReportsModule } from '../modules/reports/reports.module';
+
+// Feature Modules - Asset History
+import { AssetHistoryModule } from '../modules/asset-history/asset-history.module';
+
 // Health Check
 import { HealthModule } from '../modules/health/health.module';
 
@@ -102,6 +108,12 @@ import { HealthModule } from '../modules/health/health.module';
     
     // Replacements
     ReplacementsModule,
+    
+    // Reports
+    ReportsModule,
+    
+    // Asset History
+    AssetHistoryModule,
   ],
   controllers: [AppController],
   providers: [

@@ -109,6 +109,7 @@ model assets {
   work_orders       work_orders[]
   maintenance_records maintenance_records[]
   inventory_items   asset_inventory_items[]
+  history           asset_history[]
 
   @@unique([business_id, asset_number])
   @@index([business_id])
@@ -1401,4 +1402,45 @@ model damaged_meter_replacements {
   @@index([customer_id])
   @@index([status])
   @@map("damaged_meter_replacements")
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// سجل الأصل التاريخي
+// ═══════════════════════════════════════════════════════════════
+
+model asset_history {
+  id                  String    @id @default(uuid()) @db.Uuid
+  asset_id            String    @db.Uuid
+  
+  // نوع الحدث
+  event_type          String    @db.VarChar(30) // created, capitalized, maintenance, repair, replacement, addition, revaluation, impairment, disposal, transfer
+  event_date          DateTime  @default(now())
+  event_description   String    @db.Text
+  
+  // المرجع
+  reference_type      String?   @db.VarChar(30) // work_order, maintenance_request, inventory, etc.
+  reference_id        String?   @db.Uuid
+  reference_number    String?   @db.VarChar(50)
+  
+  // التأثير المالي
+  cost_impact         Decimal?  @db.Decimal(15, 2)
+  value_before        Decimal?  @db.Decimal(15, 2)
+  value_after         Decimal?  @db.Decimal(15, 2)
+  
+  // المستخدم
+  performed_by        String?   @db.Uuid
+  
+  // البيانات الإضافية
+  metadata            Json?
+  
+  created_at          DateTime  @default(now())
+  
+  // العلاقات
+  asset               assets    @relation(fields: [asset_id], references: [id])
+  
+  @@index([asset_id])
+  @@index([event_date])
+  @@index([event_type])
+  @@map("asset_history")
 }
