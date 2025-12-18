@@ -359,6 +359,20 @@ export class WorkOrdersService {
     });
   }
 
+  async delete(id: string) {
+    const workOrder = await this.prisma.work_orders.findUnique({
+      where: { id },
+    });
+
+    if (!workOrder) {
+      throw new NotFoundException('Work order not found');
+    }
+
+    return this.prisma.work_orders.delete({
+      where: { id },
+    });
+  }
+
   async getStatistics(businessId: string) {
     const [byStatus, byType, byPriority, totalCosts] = await Promise.all([
       this.prisma.work_orders.groupBy({

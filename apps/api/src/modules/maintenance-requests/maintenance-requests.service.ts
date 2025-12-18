@@ -223,6 +223,20 @@ export class MaintenanceRequestsService {
     });
   }
 
+  async delete(id: string) {
+    const request = await this.prisma.maintenance_requests.findUnique({
+      where: { id },
+    });
+
+    if (!request) {
+      throw new NotFoundException('Maintenance request not found');
+    }
+
+    return this.prisma.maintenance_requests.delete({
+      where: { id },
+    });
+  }
+
   async getStatistics(businessId: string) {
     const [byStatus, byPriority, byType, recentRequests] = await Promise.all([
       this.prisma.maintenance_requests.groupBy({

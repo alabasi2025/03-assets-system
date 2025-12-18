@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Put,
+  Delete,
   Body,
   Param,
   Query,
@@ -137,6 +138,16 @@ export class WorkOrdersController {
       success: true,
       data: await this.service.addMaintenanceRecord(id, record),
       message: 'تم إضافة سجل الصيانة بنجاح',
+    };
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  async delete(@Param('id', ParseUUIDPipe) id: string) {
+    await this.service.delete(id);
+    return {
+      success: true,
+      message: 'تم حذف أمر العمل بنجاح',
     };
   }
 }

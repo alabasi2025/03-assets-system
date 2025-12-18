@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Put,
+  Delete,
   Body,
   Param,
   Query,
@@ -101,6 +102,16 @@ export class MaintenanceRequestsController {
       success: true,
       data: await this.service.complete(id, body.resolution, body.rootCause),
       message: 'تم إكمال طلب الصيانة بنجاح',
+    };
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  async delete(@Param('id', ParseUUIDPipe) id: string) {
+    await this.service.delete(id);
+    return {
+      success: true,
+      message: 'تم حذف طلب الصيانة بنجاح',
     };
   }
 }

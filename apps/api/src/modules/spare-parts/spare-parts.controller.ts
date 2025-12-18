@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Put,
+  Delete,
   Body,
   Param,
   Query,
@@ -117,6 +118,16 @@ export class SparePartsController {
       success: true,
       data: await this.service.update(id, dto),
       message: 'تم تحديث قطعة الغيار بنجاح',
+    };
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  async delete(@Param('id', ParseUUIDPipe) id: string) {
+    await this.service.delete(id);
+    return {
+      success: true,
+      message: 'تم حذف قطعة الغيار بنجاح',
     };
   }
 
