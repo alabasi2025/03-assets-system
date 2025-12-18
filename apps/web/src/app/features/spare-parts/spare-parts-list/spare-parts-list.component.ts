@@ -278,14 +278,25 @@ export class SparePartsListComponent implements OnInit {
       rejectLabel: 'إلغاء',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
-        // Call delete API when available
-        this.messageService.add({
-          severity: 'success',
-          summary: 'تم',
-          detail: 'تم حذف قطعة الغيار بنجاح'
+        this.sparePartsService.deleteSparePart(part.id).subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'تم',
+              detail: 'تم حذف قطعة الغيار بنجاح'
+            });
+            this.loadParts();
+            this.loadStatistics();
+          },
+          error: (error: any) => {
+            console.error('Error:', error);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'خطأ',
+              detail: 'فشل في حذف قطعة الغيار'
+            });
+          }
         });
-        this.loadParts();
-        this.loadStatistics();
       }
     });
   }

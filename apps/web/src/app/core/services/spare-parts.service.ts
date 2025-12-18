@@ -53,6 +53,10 @@ export class SparePartsService {
     return this.api.put<ApiResponse<SparePart>>(`${this.endpoint}/${id}`, data);
   }
 
+  deleteSparePart(id: string): Observable<ApiResponse<void>> {
+    return this.api.delete<ApiResponse<void>>(`${this.endpoint}/${id}`);
+  }
+
   // ═══════════════════════════════════════════════════════════════
   // Stock Movements
   // ═══════════════════════════════════════════════════════════════

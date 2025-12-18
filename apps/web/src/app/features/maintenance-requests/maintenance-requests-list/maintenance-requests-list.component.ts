@@ -279,13 +279,25 @@ export class MaintenanceRequestsListComponent implements OnInit {
       rejectLabel: 'إلغاء',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'تم',
-          detail: 'تم حذف طلب الصيانة بنجاح'
+        this.maintenanceService.deleteRequest(request.id).subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'تم',
+              detail: 'تم حذف طلب الصيانة بنجاح'
+            });
+            this.loadRequests();
+            this.loadStatistics();
+          },
+          error: (error: any) => {
+            console.error('Error:', error);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'خطأ',
+              detail: 'فشل في حذف طلب الصيانة'
+            });
+          }
         });
-        this.loadRequests();
-        this.loadStatistics();
       }
     });
   }
