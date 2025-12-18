@@ -18,12 +18,12 @@ import { CablesService, Cable } from '../../../core/services/cables.service';
   template: `
     <p-toast></p-toast>
     <p-confirmDialog></p-confirmDialog>
-    <div class="p-4">
-      <!-- العنوان في اليسار والزر في اليمين -->
-      <div class="flex justify-between items-center mb-4">
+    <div class="page-container animate-fade-in">
+      <!-- Page Header -->
+      <div class="page-header">
         <div>
-          <h2 class="text-2xl font-bold text-gray-800">إدارة الكابلات</h2>
-          <p class="text-gray-600">عرض وإدارة كابلات الشبكة الكهربائية</p>
+          <h2>إدارة الكابلات</h2>
+          <p>عرض وإدارة كابلات الشبكة الكهربائية</p>
         </div>
         <a routerLink="/cables/new" class="btn-add-warning">
           <i class="pi pi-plus"></i>

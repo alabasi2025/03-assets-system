@@ -23,12 +23,12 @@ import { GeneratorsService, Generator } from '../../../core/services/generators.
     <p-toast></p-toast>
     <p-confirmDialog></p-confirmDialog>
     
-    <div class="p-4">
-      <!-- العنوان في اليسار والزر في اليمين -->
-      <div class="flex justify-between items-center mb-4">
+    <div class="page-container animate-fade-in">
+      <!-- Page Header -->
+      <div class="page-header">
         <div>
-          <h2 class="text-2xl font-bold text-gray-800">إدارة المولدات</h2>
-          <p class="text-gray-600">عرض وإدارة المولدات الكهربائية</p>
+          <h2>إدارة المولدات</h2>
+          <p>عرض وإدارة المولدات الكهربائية</p>
         </div>
         <a routerLink="/generators/new" class="btn-add-purple">
           <i class="pi pi-plus"></i>

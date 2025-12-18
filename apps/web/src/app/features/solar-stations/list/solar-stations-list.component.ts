@@ -23,12 +23,12 @@ import { SolarStationsService, SolarStation } from '../../../core/services/solar
     <p-toast></p-toast>
     <p-confirmDialog></p-confirmDialog>
     
-    <div class="p-4">
-      <!-- العنوان في اليسار والزر في اليمين -->
-      <div class="flex justify-between items-center mb-4">
+    <div class="page-container animate-fade-in">
+      <!-- Page Header -->
+      <div class="page-header">
         <div>
-          <h2 class="text-2xl font-bold text-gray-800">إدارة محطات الطاقة الشمسية</h2>
-          <p class="text-gray-600">عرض وإدارة محطات الطاقة الشمسية والألواح والعاكسات</p>
+          <h2>إدارة محطات الطاقة الشمسية</h2>
+          <p>عرض وإدارة محطات الطاقة الشمسية والألواح والعاكسات</p>
         </div>
         <a routerLink="/solar-stations/new" class="btn-add-success">
           <i class="pi pi-sun"></i>
