@@ -14,6 +14,7 @@ import { TreeModule } from 'primeng/tree';
 import { CardModule } from 'primeng/card';
 import { MessageService, ConfirmationService, TreeNode } from 'primeng/api';
 import { CategoriesService, Category, CategoryStatistics } from '../../../core/services/categories.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-categories-list',
@@ -491,14 +492,15 @@ export class CategoriesListComponent implements OnInit {
     }
 
     this.saving = true;
-    const data = {
+    const data: any = {
+      businessId: environment.defaultBusinessId,
       code: this.categoryForm.code,
       name: this.categoryForm.name,
       nameEn: this.categoryForm.name_en,
-      parentId: this.categoryForm.parent_id,
+      parentId: this.categoryForm.parent_id || undefined,
       depreciationMethod: this.categoryForm.depreciation_method,
-      usefulLifeYears: this.categoryForm.useful_life_years,
-      salvageRate: this.categoryForm.salvage_rate,
+      usefulLifeYears: Number(this.categoryForm.useful_life_years) || 5,
+      salvageRate: Number(this.categoryForm.salvage_rate) || 0,
       description: this.categoryForm.description
     };
 

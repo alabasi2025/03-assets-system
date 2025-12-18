@@ -1,4 +1,5 @@
 import { IsString, IsOptional, IsUUID, IsInt, IsNumber, IsBoolean, Min, Max, MaxLength } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateAssetCategoryDto {
@@ -44,14 +45,16 @@ export class CreateAssetCategoryDto {
 
   @ApiPropertyOptional({ description: 'العمر الافتراضي بالسنوات', example: 5, minimum: 1, maximum: 100 })
   @IsOptional()
-  @IsInt()
+  @Transform(({ value }) => value !== undefined && value !== null && value !== '' ? parseInt(value, 10) : undefined)
+  @IsInt({ message: 'العمر الافتراضي يجب أن يكون رقماً صحيحاً' })
   @Min(1)
   @Max(100)
   usefulLifeYears?: number;
 
   @ApiPropertyOptional({ description: 'نسبة القيمة المتبقية', example: 0.1 })
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => value !== undefined && value !== null && value !== '' ? Number(value) : undefined)
+  @IsNumber({}, { message: 'نسبة القيمة المتبقية يجب أن تكون رقماً' })
   salvageRate?: number;
 
   @ApiPropertyOptional({ description: 'معرف حساب الأصل' })
@@ -115,14 +118,16 @@ export class UpdateAssetCategoryDto {
 
   @ApiPropertyOptional({ description: 'العمر الافتراضي بالسنوات', minimum: 1, maximum: 100 })
   @IsOptional()
-  @IsInt()
+  @Transform(({ value }) => value !== undefined && value !== null && value !== '' ? parseInt(value, 10) : undefined)
+  @IsInt({ message: 'العمر الافتراضي يجب أن يكون رقماً صحيحاً' })
   @Min(1)
   @Max(100)
   usefulLifeYears?: number;
 
   @ApiPropertyOptional({ description: 'نسبة القيمة المتبقية' })
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => value !== undefined && value !== null && value !== '' ? Number(value) : undefined)
+  @IsNumber({}, { message: 'نسبة القيمة المتبقية يجب أن تكون رقماً' })
   salvageRate?: number;
 
   @ApiPropertyOptional({ description: 'معرف حساب الأصل' })
