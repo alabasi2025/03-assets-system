@@ -58,6 +58,10 @@ import { TooltipModule } from 'primeng/tooltip';
           <!-- Accounting Assets -->
           <div class="nav-section">
             <span class="nav-section-title">الأصول المحاسبية</span>
+            <a routerLink="/categories" routerLinkActive="active" class="nav-item" pRipple>
+              <i class="pi pi-sitemap"></i>
+              <span>التصنيفات</span>
+            </a>
             <a routerLink="/assets" routerLinkActive="active" class="nav-item" pRipple>
               <i class="pi pi-server"></i>
               <span>الأصول</span>

@@ -11,6 +11,11 @@ export const appRoutes: Route[] = [
     path: 'dashboard',
     loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
   },
+  // Categories
+  {
+    path: 'categories',
+    loadComponent: () => import('./features/categories/list/categories-list.component').then(m => m.CategoriesListComponent)
+  },
   // Assets Management (Accounting)
   {
     path: 'assets',
