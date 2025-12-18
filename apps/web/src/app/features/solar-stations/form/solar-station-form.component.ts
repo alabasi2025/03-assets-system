@@ -72,7 +72,12 @@ export class SolarStationFormComponent implements OnInit {
   onSubmit() {
     if (this.form.invalid) return;
     this.loading = true;
-    const data = { ...this.form.value, business_id: 'default-business-id' };
+    const formValue = this.form.value;
+    const data: any = { code: formValue.code, name: formValue.name, status: formValue.status };
+    if (formValue.location) data.location = formValue.location;
+    if (formValue.total_capacity_kw) data.total_capacity_kw = formValue.total_capacity_kw;
+    if (formValue.commissioning_date) data.commissioning_date = formValue.commissioning_date;
+    if (formValue.notes) data.notes = formValue.notes;
     const request = this.isEditMode ? this.solarStationsService.update(this.stationId!, data) : this.solarStationsService.create(data);
     request.subscribe({
       next: () => {

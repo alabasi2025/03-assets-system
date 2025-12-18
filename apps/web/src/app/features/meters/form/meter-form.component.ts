@@ -69,7 +69,13 @@ export class MeterFormComponent implements OnInit {
   onSubmit() {
     if (this.form.invalid) return;
     this.loading = true;
-    const data = { ...this.form.value, business_id: 'default-business-id' };
+    const formValue = this.form.value;
+    const data: any = { code: formValue.code, status: formValue.status };
+    if (formValue.serial_number) data.serial_number = formValue.serial_number;
+    if (formValue.type) data.type = formValue.type;
+    if (formValue.manufacturer) data.manufacturer = formValue.manufacturer;
+    if (formValue.model) data.model = formValue.model;
+    if (formValue.capacity_amp) data.capacity_amp = formValue.capacity_amp;
     const request = this.isEditMode ? this.metersService.update(this.meterId!, data) : this.metersService.create(data);
     request.subscribe({
       next: () => {

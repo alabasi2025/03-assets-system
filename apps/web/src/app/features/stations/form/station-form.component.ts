@@ -168,13 +168,22 @@ export class StationFormComponent implements OnInit {
     if (this.form.invalid) return;
     this.saving = true;
 
-    const data = {
-      ...this.form.value,
-      business_id: '00000000-0000-0000-0000-000000000001',
-      installation_date: this.form.value.installation_date 
-        ? new Date(this.form.value.installation_date).toISOString().split('T')[0] 
-        : null
+    const formValue = this.form.value;
+    const data: any = {
+      code: formValue.code,
+      name: formValue.name,
+      type: formValue.type,
+      status: formValue.status
     };
+    
+    // إضافة الحقول الاختيارية فقط إذا كانت لها قيم
+    if (formValue.name_en) data.name_en = formValue.name_en;
+    if (formValue.total_capacity_kw) data.total_capacity_kw = formValue.total_capacity_kw;
+    if (formValue.installation_date) data.installation_date = new Date(formValue.installation_date).toISOString().split('T')[0];
+    if (formValue.address) data.address = formValue.address;
+    if (formValue.location_lat) data.location_lat = formValue.location_lat;
+    if (formValue.location_lng) data.location_lng = formValue.location_lng;
+    if (formValue.description) data.description = formValue.description;
 
     const request = this.isEditMode
       ? this.stationsService.update(this.stationId!, data)

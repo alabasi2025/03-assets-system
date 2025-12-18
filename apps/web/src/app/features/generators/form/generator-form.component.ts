@@ -80,7 +80,14 @@ export class GeneratorFormComponent implements OnInit {
   onSubmit() {
     if (this.form.invalid) return;
     this.loading = true;
-    const data = { ...this.form.value, business_id: 'default-business-id' };
+    const formValue = this.form.value;
+    const data: any = { code: formValue.code, name: formValue.name, status: formValue.status };
+    if (formValue.station_id) data.station_id = formValue.station_id;
+    if (formValue.type) data.type = formValue.type;
+    if (formValue.manufacturer) data.manufacturer = formValue.manufacturer;
+    if (formValue.model) data.model = formValue.model;
+    if (formValue.capacity_kw) data.capacity_kw = formValue.capacity_kw;
+    if (formValue.fuel_type) data.fuel_type = formValue.fuel_type;
     const request = this.isEditMode ? this.generatorsService.update(this.generatorId!, data) : this.generatorsService.create(data);
     request.subscribe({
       next: () => {

@@ -71,7 +71,13 @@ export class CableFormComponent implements OnInit {
   onSubmit() {
     if (this.form.invalid) return;
     this.loading = true;
-    const data = { ...this.form.value, business_id: 'default-business-id' };
+    const formValue = this.form.value;
+    const data: any = { code: formValue.code, name: formValue.name, status: formValue.status };
+    if (formValue.type) data.type = formValue.type;
+    if (formValue.material) data.material = formValue.material;
+    if (formValue.cross_section) data.cross_section = formValue.cross_section;
+    if (formValue.length_meters) data.length_meters = formValue.length_meters;
+    if (formValue.capacity_amp) data.capacity_amp = formValue.capacity_amp;
     const request = this.isEditMode ? this.cablesService.update(this.cableId!, data) : this.cablesService.create(data);
     request.subscribe({
       next: () => {
