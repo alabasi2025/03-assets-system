@@ -111,21 +111,21 @@ import { environment } from '../../../../environments/environment';
               <label class="form-label">التصنيف</label>
               <p-select [options]="categoryOptions" [(ngModel)]="filters.categoryId" 
                         (onChange)="loadAssets()" placeholder="جميع التصنيفات"
-                        [showClear]="true" styleClass="w-full"></p-select>
+                        [showClear]="true" styleClass="w-full" appendTo="body"></p-select>
             </div>
             
             <div class="flex flex-col">
               <label class="form-label">الحالة</label>
               <p-select [options]="statusOptions" [(ngModel)]="filters.status" 
                         (onChange)="loadAssets()" placeholder="جميع الحالات"
-                        [showClear]="true" styleClass="w-full"></p-select>
+                        [showClear]="true" styleClass="w-full" appendTo="body"></p-select>
             </div>
             
             <div class="flex flex-col">
               <label class="form-label">الحالة الفنية</label>
               <p-select [options]="conditionOptions" [(ngModel)]="filters.condition" 
                         (onChange)="loadAssets()" placeholder="جميع الحالات الفنية"
-                        [showClear]="true" styleClass="w-full"></p-select>
+                        [showClear]="true" styleClass="w-full" appendTo="body"></p-select>
             </div>
             
             <div class="flex flex-col">
