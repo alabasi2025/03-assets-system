@@ -466,7 +466,7 @@ export class ReportsService {
       this.prisma.stations.count({ where }),
       this.prisma.generators.count({ where }),
       this.prisma.meters.count({ where }),
-      this.prisma.maintenance_requests.count({ where: { ...where, status: { in: ['new', 'assigned', 'in_progress'] } } }),
+      this.prisma.maintenance_requests.count({ where: { ...(businessId && { business_id: businessId }), status: { in: ['new', 'assigned', 'in_progress'] } } }),
       this.prisma.work_orders.count({ where: { status: { in: ['draft', 'assigned', 'in_progress'] } } }),
       this.prisma.technicians.count({ where })
     ]);
