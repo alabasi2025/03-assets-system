@@ -2,7 +2,7 @@ import { IsString, IsOptional, IsUUID, IsNumber, IsDateString, IsInt } from 'cla
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 
 export class CreateSolarStationDto {
-  @ApiProperty() @IsUUID() business_id: string;
+  @ApiPropertyOptional() @IsOptional() @IsUUID() business_id?: string;
   @ApiProperty() @IsString() code: string;
   @ApiProperty() @IsString() name: string;
   @ApiPropertyOptional() @IsOptional() @IsString() name_en?: string;

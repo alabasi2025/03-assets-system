@@ -2,7 +2,7 @@ import { IsString, IsOptional, IsUUID, IsNumber, IsDateString, IsObject } from '
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 
 export class CreateCableDto {
-  @ApiProperty() @IsUUID() business_id: string;
+  @ApiPropertyOptional() @IsOptional() @IsUUID() business_id?: string;
   @ApiProperty() @IsString() code: string;
   @ApiProperty() @IsString() name: string;
   @ApiProperty() @IsString() type: string;

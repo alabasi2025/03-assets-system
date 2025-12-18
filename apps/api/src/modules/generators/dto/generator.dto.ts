@@ -2,9 +2,10 @@ import { IsString, IsOptional, IsUUID, IsNumber, IsDateString, IsInt } from 'cla
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 
 export class CreateGeneratorDto {
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsUUID()
-  station_id: string;
+  station_id?: string;
 
   @ApiProperty()
   @IsString()

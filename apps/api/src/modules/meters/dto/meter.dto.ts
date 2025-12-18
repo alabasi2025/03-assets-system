@@ -2,7 +2,7 @@ import { IsString, IsOptional, IsUUID, IsNumber, IsDateString } from 'class-vali
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 
 export class CreateMeterDto {
-  @ApiProperty() @IsUUID() business_id: string;
+  @ApiPropertyOptional() @IsOptional() @IsUUID() business_id?: string;
   @ApiProperty() @IsString() code: string;
   @ApiPropertyOptional() @IsOptional() @IsString() serial_number?: string;
   @ApiProperty() @IsString() type: string;

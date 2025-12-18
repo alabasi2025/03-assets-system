@@ -17,7 +17,7 @@ datasource db {
 
 model asset_categories {
   id                String   @id @default(uuid()) @db.Uuid
-  business_id       String   @db.Uuid
+  business_id       String?  @db.Uuid
   parent_id         String?  @db.Uuid
   code              String   @db.VarChar(50)
   name              String   @db.VarChar(255)
@@ -49,7 +49,7 @@ model asset_categories {
 
 model assets {
   id                String   @id @default(uuid()) @db.Uuid
-  business_id       String   @db.Uuid
+  business_id       String?  @db.Uuid
   category_id       String   @db.Uuid
   asset_number      String   @db.VarChar(50)
   barcode           String?  @db.VarChar(100)
@@ -175,7 +175,7 @@ model asset_movements {
 
 model maintenance_plans {
   id                String   @id @default(uuid()) @db.Uuid
-  business_id       String   @db.Uuid
+  business_id       String?  @db.Uuid
   name              String   @db.VarChar(255)
   description       String?  @db.Text
   asset_category_id String?  @db.Uuid
@@ -203,7 +203,7 @@ model maintenance_plans {
 
 model maintenance_schedules {
   id                String   @id @default(uuid()) @db.Uuid
-  business_id       String   @db.Uuid
+  business_id       String?  @db.Uuid
   plan_id           String   @db.Uuid
   asset_id          String   @db.Uuid
   schedule_number   String   @db.VarChar(50)
@@ -238,7 +238,7 @@ model maintenance_schedules {
 
 model maintenance_requests {
   id                String   @id @default(uuid()) @db.Uuid
-  business_id       String   @db.Uuid
+  business_id       String?  @db.Uuid
   request_number    String   @db.VarChar(50)
   asset_id          String?  @db.Uuid
   station_id        String?  @db.Uuid
@@ -276,7 +276,7 @@ model maintenance_requests {
 
 model work_orders {
   id                String   @id @default(uuid()) @db.Uuid
-  business_id       String   @db.Uuid
+  business_id       String?  @db.Uuid
   work_order_number String   @db.VarChar(50)
   request_id        String?  @db.Uuid
   asset_id          String?  @db.Uuid
@@ -360,7 +360,7 @@ model maintenance_records {
 
 model spare_part_categories {
   id                String   @id @default(uuid()) @db.Uuid
-  business_id       String   @db.Uuid
+  business_id       String?  @db.Uuid
   parent_id         String?  @db.Uuid
   code              String   @db.VarChar(50)
   name              String   @db.VarChar(255)
@@ -385,7 +385,7 @@ model spare_part_categories {
 
 model spare_parts {
   id                String   @id @default(uuid()) @db.Uuid
-  business_id       String   @db.Uuid
+  business_id       String?  @db.Uuid
   category_id       String?  @db.Uuid
   part_code         String   @db.VarChar(50)
   name              String   @db.VarChar(255)
@@ -455,7 +455,7 @@ model spare_part_movements {
 
 model stations {
   id                String   @id @default(uuid()) @db.Uuid
-  business_id       String   @db.Uuid
+  business_id       String?  @db.Uuid
   code              String   @db.VarChar(50)
   name              String   @db.VarChar(255)
   name_en           String?  @db.VarChar(255)
@@ -614,7 +614,7 @@ model transformers {
 
 model solar_stations {
   id                String   @id @default(uuid()) @db.Uuid
-  business_id       String   @db.Uuid
+  business_id       String?  @db.Uuid
   code              String   @db.VarChar(50)
   name              String   @db.VarChar(255)
   name_en           String?  @db.VarChar(255)
@@ -786,7 +786,7 @@ model battery_readings {
 // الكيابل/الخطوط
 model cables {
   id                String   @id @default(uuid()) @db.Uuid
-  business_id       String   @db.Uuid
+  business_id       String?  @db.Uuid
   code              String   @db.VarChar(50)
   name              String   @db.VarChar(255)
   type              String   @db.VarChar(50) // main, sub, link
@@ -818,7 +818,7 @@ model cables {
 // نقاط الالتقاء
 model junction_points {
   id                String   @id @default(uuid()) @db.Uuid
-  business_id       String   @db.Uuid
+  business_id       String?  @db.Uuid
   code              String   @db.VarChar(50)
   name              String   @db.VarChar(255)
   type              String   @db.VarChar(50) // intersection, distribution, link, collection_box
@@ -857,7 +857,7 @@ model junction_cables {
 // المفاتيح/القواطع
 model switches {
   id                String   @id @default(uuid()) @db.Uuid
-  business_id       String   @db.Uuid
+  business_id       String?  @db.Uuid
   code              String   @db.VarChar(50)
   name              String   @db.VarChar(255)
   type              String   @db.VarChar(50) // manual, automatic, remote
@@ -900,7 +900,7 @@ model switch_logs {
 // صناديق التجميع
 model distribution_boxes {
   id                String   @id @default(uuid()) @db.Uuid
-  business_id       String   @db.Uuid
+  business_id       String?  @db.Uuid
   code              String   @db.VarChar(50)
   name              String   @db.VarChar(255)
   station_id        String?  @db.Uuid
@@ -929,7 +929,7 @@ model distribution_boxes {
 // العدادات
 model meters {
   id                String   @id @default(uuid()) @db.Uuid
-  business_id       String   @db.Uuid
+  business_id       String?  @db.Uuid
   code              String   @db.VarChar(50)
   serial_number     String?  @db.VarChar(255)
   type              String   @db.VarChar(50) // traditional, sts, smart

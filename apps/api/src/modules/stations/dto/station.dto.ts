@@ -2,9 +2,10 @@ import { IsString, IsOptional, IsUUID, IsNumber, IsDateString } from 'class-vali
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 
 export class CreateStationDto {
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsUUID()
-  business_id: string;
+  business_id?: string;
 
   @ApiProperty()
   @IsString()
