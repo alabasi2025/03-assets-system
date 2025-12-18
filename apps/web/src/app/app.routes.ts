@@ -130,6 +130,7 @@ export const appRoutes: Route[] = [
   },
   // Spare Parts
   {
+    path: 'spare-parts',
     children: [
       { path: '', loadComponent: () => import('./features/spare-parts/spare-parts-list/spare-parts-list.component').then(m => m.SparePartsListComponent) },
       { path: 'new', loadComponent: () => import('./features/spare-parts/spare-part-form/spare-part-form.component').then(m => m.SparePartFormComponent) },
