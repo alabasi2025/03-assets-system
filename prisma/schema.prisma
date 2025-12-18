@@ -36,6 +36,7 @@ model asset_categories {
   parent   asset_categories?  @relation("CategoryHierarchy", fields: [parent_id], references: [id])
   children asset_categories[] @relation("CategoryHierarchy")
   assets   assets[]
+  inventories asset_inventory[]
 
   @@unique([business_id, code])
   @@index([business_id])
@@ -107,6 +108,7 @@ model assets {
   maintenance_requests maintenance_requests[]
   work_orders       work_orders[]
   maintenance_records maintenance_records[]
+  inventory_items   asset_inventory_items[]
 
   @@unique([business_id, asset_number])
   @@index([business_id])
@@ -306,6 +308,7 @@ model work_orders {
 
   request           maintenance_requests? @relation(fields: [request_id], references: [id])
   asset             assets?               @relation(fields: [asset_id], references: [id])
+  technician        technicians?          @relation("AssignedTechnician", fields: [assigned_to], references: [id])
   records           maintenance_records[]
 
   @@unique([business_id, work_order_number])
@@ -475,6 +478,7 @@ model stations {
   control_panels    control_panels[]
   transformers      transformers[]
   distribution_boxes distribution_boxes[]
+  inventories       asset_inventory[]
 
   @@unique([business_id, code])
   @@index([business_id])
@@ -543,6 +547,7 @@ model generator_components {
 // قراءات المولد
 model generator_readings {
   id                String   @id @default(uuid()) @db.Uuid
+  business_id       String?  @db.Uuid
   generator_id      String   @db.Uuid
   reading_time      DateTime @default(now())
   running_hours     Decimal? @db.Decimal(18, 2)
@@ -553,14 +558,17 @@ model generator_readings {
   temperature       Decimal? @db.Decimal(6, 2)
   oil_pressure      Decimal? @db.Decimal(8, 2)
   power_output      Decimal? @db.Decimal(18, 2)
-  source            String   @default("manual") @db.VarChar(50) // manual, iot
+  source            String   @default("manual") @db.VarChar(50)
+  notes             String?  @db.Text
   recorded_by       String?  @db.Uuid
+  is_deleted        Boolean  @default(false)
   created_at        DateTime @default(now())
 
   generator         generators @relation(fields: [generator_id], references: [id])
 
   @@index([generator_id])
   @@index([reading_time])
+  @@index([business_id])
   @@map("generator_readings")
 }
 
@@ -960,20 +968,29 @@ model meters {
 // قراءات العدادات
 model meter_readings {
   id                String   @id @default(uuid()) @db.Uuid
+  business_id       String?  @db.Uuid
   meter_id          String   @db.Uuid
   reading_time      DateTime @default(now())
-  reading_value     Decimal? @db.Decimal(18, 2)
-  consumption       Decimal? @db.Decimal(18, 2)
+  reading_value     Decimal? @db.Decimal(18, 3)
+  previous_value    Decimal? @db.Decimal(18, 3)
+  consumption       Decimal? @db.Decimal(18, 3)
   peak_demand       Decimal? @db.Decimal(18, 2)
   power_factor      Decimal? @db.Decimal(5, 2)
+  reading_type      String   @default("regular") @db.VarChar(50)
   source            String   @default("manual") @db.VarChar(50)
-  reader_id         String?  @db.Uuid
+  image_url         String?  @db.VarChar(500)
+  notes             String?  @db.Text
+  recorded_by       String?  @db.Uuid
+  verified_by       String?  @db.Uuid
+  verified_at       DateTime?
+  is_deleted        Boolean  @default(false)
   created_at        DateTime @default(now())
 
   meter             meters @relation(fields: [meter_id], references: [id])
 
   @@index([meter_id])
   @@index([reading_time])
+  @@index([business_id])
   @@map("meter_readings")
 }
 
@@ -995,3 +1012,193 @@ model cable_status {
   @@index([reading_time])
   @@map("cable_status")
 }
+
+
+// ═══════════════════════════════════════════════════════════════
+// الفنيين والمقاولين
+// ═══════════════════════════════════════════════════════════════
+
+// المقاولين
+model contractors {
+  id                String   @id @default(uuid()) @db.Uuid
+  business_id       String?  @db.Uuid
+  contractor_code   String   @db.VarChar(20)
+  name              String   @db.VarChar(255)
+  name_en           String?  @db.VarChar(255)
+  contact_person    String?  @db.VarChar(255)
+  phone             String?  @db.VarChar(20)
+  email             String?  @db.VarChar(255)
+  address           String?  @db.Text
+  specializations   Json?    // التخصصات
+  tax_number        String?  @db.VarChar(50)
+  bank_account      String?  @db.VarChar(50)
+  rating            Decimal  @default(0) @db.Decimal(3, 2)
+  status            String   @default("active") @db.VarChar(50) // active, inactive, blacklisted
+  notes             String?  @db.Text
+  is_deleted        Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  technicians       technicians[]
+  contracts         maintenance_contracts[]
+
+  @@unique([business_id, contractor_code])
+  @@index([business_id])
+  @@index([status])
+  @@map("contractors")
+}
+
+// الفنيين
+model technicians {
+  id                String   @id @default(uuid()) @db.Uuid
+  business_id       String?  @db.Uuid
+  employee_id       String?  @db.Uuid  // FK - نظام HR
+  technician_code   String   @db.VarChar(20)
+  name              String   @db.VarChar(255)
+  name_en           String?  @db.VarChar(255)
+  phone             String?  @db.VarChar(20)
+  email             String?  @db.VarChar(255)
+  specializations   Json?    // التخصصات
+  certifications    Json?    // الشهادات
+  skills_level      String   @default("mid") @db.VarChar(20) // junior, mid, senior, expert
+  hourly_rate       Decimal  @default(0) @db.Decimal(10, 2)
+  is_internal       Boolean  @default(true)
+  contractor_id     String?  @db.Uuid
+  rating            Decimal  @default(0) @db.Decimal(3, 2)
+  total_jobs        Int      @default(0)
+  completed_jobs    Int      @default(0)
+  is_available      Boolean  @default(true)
+  notes             String?  @db.Text
+  is_deleted        Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  contractor        contractors? @relation(fields: [contractor_id], references: [id])
+  work_orders       work_orders[] @relation("AssignedTechnician")
+  performances      technician_performance[]
+
+  @@unique([business_id, technician_code])
+  @@index([business_id])
+  @@index([contractor_id])
+  @@index([is_available])
+  @@map("technicians")
+}
+
+// عقود الصيانة
+model maintenance_contracts {
+  id                String   @id @default(uuid()) @db.Uuid
+  business_id       String?  @db.Uuid
+  contract_number   String   @db.VarChar(20)
+  contractor_id     String   @db.Uuid
+  title             String   @db.VarChar(255)
+  description       String?  @db.Text
+  contract_type     String   @default("annual") @db.VarChar(50) // annual, project, on_call
+  start_date        DateTime @db.Date
+  end_date          DateTime @db.Date
+  value             Decimal  @db.Decimal(18, 2)
+  payment_terms     String?  @db.Text
+  scope             String?  @db.Text
+  sla               Json?    // اتفاقية مستوى الخدمة
+  status            String   @default("draft") @db.VarChar(50) // draft, active, expired, terminated
+  attachments       Json?
+  is_deleted        Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  contractor        contractors @relation(fields: [contractor_id], references: [id])
+
+  @@unique([business_id, contract_number])
+  @@index([business_id])
+  @@index([contractor_id])
+  @@index([status])
+  @@map("maintenance_contracts")
+}
+
+// تقييم أداء الفنيين
+model technician_performance {
+  id                String   @id @default(uuid()) @db.Uuid
+  technician_id     String   @db.Uuid
+  period_start      DateTime @db.Date
+  period_end        DateTime @db.Date
+  total_jobs        Int      @default(0)
+  completed_on_time Int      @default(0)
+  completed_late    Int      @default(0)
+  rework_count      Int      @default(0)
+  customer_complaints Int    @default(0)
+  quality_score     Decimal  @default(0) @db.Decimal(3, 2)
+  efficiency_score  Decimal  @default(0) @db.Decimal(3, 2)
+  overall_score     Decimal  @default(0) @db.Decimal(3, 2)
+  notes             String?  @db.Text
+  evaluated_by      String?  @db.Uuid
+  created_at        DateTime @default(now())
+
+  technician        technicians @relation(fields: [technician_id], references: [id])
+
+  @@index([technician_id])
+  @@index([period_start, period_end])
+  @@map("technician_performance")
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// Inventory & Reconciliation (الجرد والمطابقة)
+// ═══════════════════════════════════════════════════════════════
+
+model asset_inventory {
+  id               String   @id @default(uuid()) @db.Uuid
+  business_id      String   @db.Uuid
+  inventory_number String   @db.VarChar(20)
+  inventory_date   DateTime @db.Date
+  station_id       String?  @db.Uuid
+  category_id      String?  @db.Uuid
+  status           String   @default("draft") @db.VarChar(50) // draft, in_progress, completed, approved
+  total_assets     Int      @default(0)
+  found_assets     Int      @default(0)
+  missing_assets   Int      @default(0)
+  damaged_assets   Int      @default(0)
+  notes            String?  @db.Text
+  conducted_by     String?  @db.Uuid
+  approved_by      String?  @db.Uuid
+  approved_at      DateTime?
+  is_deleted       Boolean  @default(false)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  // Relations
+  station          stations?              @relation(fields: [station_id], references: [id])
+  category         asset_categories?      @relation(fields: [category_id], references: [id])
+  items            asset_inventory_items[]
+
+  @@unique([business_id, inventory_number])
+  @@index([business_id])
+  @@index([inventory_date])
+  @@index([status])
+  @@map("asset_inventory")
+}
+
+model asset_inventory_items {
+  id                String   @id @default(uuid()) @db.Uuid
+  inventory_id      String   @db.Uuid
+  asset_id          String   @db.Uuid
+  expected_location String?  @db.VarChar(255)
+  actual_location   String?  @db.VarChar(255)
+  condition         String   @default("good") @db.VarChar(50) // good, fair, poor, damaged, missing
+  notes             String?  @db.Text
+  checked_by        String?  @db.Uuid
+  checked_at        DateTime?
+  is_deleted        Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  // Relations
+  inventory         asset_inventory @relation(fields: [inventory_id], references: [id])
+  asset             assets          @relation(fields: [asset_id], references: [id])
+
+  @@index([inventory_id])
+  @@index([asset_id])
+  @@index([condition])
+  @@map("asset_inventory_items")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Generator Readings (قراءات المولدات)

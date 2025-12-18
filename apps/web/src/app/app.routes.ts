@@ -98,9 +98,38 @@ export const appRoutes: Route[] = [
       { path: ':id/edit', loadComponent: () => import('./features/work-orders/work-order-form/work-order-form.component').then(m => m.WorkOrderFormComponent) }
     ]
   },
+  // Technicians & Contractors
+  {
+    path: 'technicians',
+    children: [
+      { path: '', loadComponent: () => import('./features/technicians/list/technicians-list.component').then(m => m.TechniciansListComponent) },
+      { path: 'new', loadComponent: () => import('./features/technicians/form/technician-form.component').then(m => m.TechnicianFormComponent) },
+      { path: 'contractors', loadComponent: () => import('./features/technicians/contractors/contractors-list.component').then(m => m.ContractorsListComponent) },
+      { path: 'contracts', loadComponent: () => import('./features/technicians/contracts/contracts-list.component').then(m => m.ContractsListComponent) },
+      { path: ':id/edit', loadComponent: () => import('./features/technicians/form/technician-form.component').then(m => m.TechnicianFormComponent) }
+    ]
+  },
+  // Inventory & Reconciliation
+  {
+    path: 'inventory',
+    children: [
+      { path: '', loadComponent: () => import('./features/inventory/list/inventory-list.component').then(m => m.InventoryListComponent) },
+      { path: 'new', loadComponent: () => import('./features/inventory/list/inventory-list.component').then(m => m.InventoryListComponent) },
+      { path: ':id', loadComponent: () => import('./features/inventory/list/inventory-list.component').then(m => m.InventoryListComponent) },
+      { path: ':id/edit', loadComponent: () => import('./features/inventory/list/inventory-list.component').then(m => m.InventoryListComponent) }
+    ]
+  },
+  // Readings
+  {
+    path: 'readings',
+    children: [
+      { path: '', redirectTo: 'generators', pathMatch: 'full' },
+      { path: 'generators', loadComponent: () => import('./features/readings/generators/generator-readings.component').then(m => m.GeneratorReadingsComponent) },
+      { path: 'meters', loadComponent: () => import('./features/readings/meters/meter-readings.component').then(m => m.MeterReadingsComponent) }
+    ]
+  },
   // Spare Parts
   {
-    path: 'spare-parts',
     children: [
       { path: '', loadComponent: () => import('./features/spare-parts/spare-parts-list/spare-parts-list.component').then(m => m.SparePartsListComponent) },
       { path: 'new', loadComponent: () => import('./features/spare-parts/spare-part-form/spare-part-form.component').then(m => m.SparePartFormComponent) },

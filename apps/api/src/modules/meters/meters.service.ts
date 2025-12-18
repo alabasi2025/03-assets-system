@@ -81,7 +81,7 @@ export class MetersService {
         peak_demand: dto.peak_demand,
         power_factor: dto.power_factor,
         source: dto.source || 'manual',
-        reader_id: dto.reader_id
+        recorded_by: dto.reader_id
       }
     });
   }

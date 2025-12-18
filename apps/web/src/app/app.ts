@@ -86,6 +86,45 @@ import { TooltipModule } from 'primeng/tooltip';
             </a>
           </div>
           
+          <!-- Technicians & Contractors -->
+          <div class="nav-section">
+            <span class="nav-section-title">الفنيين والمقاولين</span>
+            <a routerLink="/technicians" routerLinkActive="active" class="nav-item" pRipple>
+              <i class="pi pi-users"></i>
+              <span>الفنيين</span>
+            </a>
+            <a routerLink="/technicians/contractors" routerLinkActive="active" class="nav-item" pRipple>
+              <i class="pi pi-building"></i>
+              <span>المقاولين</span>
+            </a>
+            <a routerLink="/technicians/contracts" routerLinkActive="active" class="nav-item" pRipple>
+              <i class="pi pi-file"></i>
+              <span>العقود</span>
+            </a>
+          </div>
+          
+          <!-- Inventory & Reconciliation -->
+          <div class="nav-section">
+            <span class="nav-section-title">الجرد والمطابقة</span>
+            <a routerLink="/inventory" routerLinkActive="active" class="nav-item" pRipple>
+              <i class="pi pi-list-check"></i>
+              <span>الجرد</span>
+            </a>
+          </div>
+          
+          <!-- Readings -->
+          <div class="nav-section">
+            <span class="nav-section-title">القراءات</span>
+            <a routerLink="/readings/generators" routerLinkActive="active" class="nav-item" pRipple>
+              <i class="pi pi-chart-line"></i>
+              <span>قراءات المولدات</span>
+            </a>
+            <a routerLink="/readings/meters" routerLinkActive="active" class="nav-item" pRipple>
+              <i class="pi pi-chart-bar"></i>
+              <span>قراءات العدادات</span>
+            </a>
+          </div>
+          
           <!-- Inventory -->
           <div class="nav-section">
             <span class="nav-section-title">المخزون</span>

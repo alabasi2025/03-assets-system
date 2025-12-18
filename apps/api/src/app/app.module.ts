@@ -32,6 +32,15 @@ import { MetersModule } from '../modules/meters/meters.module';
 // Feature Modules - Solar Energy
 import { SolarStationsModule } from '../modules/solar-stations/solar-stations.module';
 
+// Feature Modules - Technicians & Contractors
+import { TechniciansModule } from '../modules/technicians/technicians.module';
+
+// Feature Modules - Inventory & Reconciliation
+import { InventoryModule } from '../modules/inventory/inventory.module';
+
+// Feature Modules - Readings
+import { ReadingsModule } from '../modules/readings/readings.module';
+
 // Health Check
 import { HealthModule } from '../modules/health/health.module';
 
@@ -72,6 +81,15 @@ import { HealthModule } from '../modules/health/health.module';
     
     // Solar Energy
     SolarStationsModule,
+    
+    // Technicians & Contractors
+    TechniciansModule,
+    
+    // Inventory & Reconciliation
+    InventoryModule,
+    
+    // Readings
+    ReadingsModule,
   ],
   controllers: [AppController],
   providers: [
