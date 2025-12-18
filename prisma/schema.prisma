@@ -485,7 +485,7 @@ model stations {
 // المولدات
 model generators {
   id                String   @id @default(uuid()) @db.Uuid
-  station_id        String   @db.Uuid
+  station_id        String?  @db.Uuid
   code              String   @db.VarChar(50)
   name              String   @db.VarChar(255)
   manufacturer      String?  @db.VarChar(255)
@@ -507,11 +507,11 @@ model generators {
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
 
-  station           stations @relation(fields: [station_id], references: [id])
+  station           stations? @relation(fields: [station_id], references: [id])
   components        generator_components[]
   readings          generator_readings[]
 
-  @@unique([station_id, code])
+  @@unique([code])
   @@index([station_id])
   @@index([status])
   @@map("generators")
@@ -789,7 +789,7 @@ model cables {
   business_id       String?  @db.Uuid
   code              String   @db.VarChar(50)
   name              String   @db.VarChar(255)
-  type              String   @db.VarChar(50) // main, sub, link
+  type              String?  @db.VarChar(50) // main, sub, link
   cross_section     Decimal? @db.Decimal(10, 2) // mm²
   material          String?  @db.VarChar(50) // copper, aluminum
   length_meters     Decimal? @db.Decimal(18, 2)
@@ -932,7 +932,7 @@ model meters {
   business_id       String?  @db.Uuid
   code              String   @db.VarChar(50)
   serial_number     String?  @db.VarChar(255)
-  type              String   @db.VarChar(50) // traditional, sts, smart
+  type              String?  @db.VarChar(50) // traditional, sts, smart
   manufacturer      String?  @db.VarChar(255)
   model             String?  @db.VarChar(255)
   capacity_amp      Decimal? @db.Decimal(10, 2)

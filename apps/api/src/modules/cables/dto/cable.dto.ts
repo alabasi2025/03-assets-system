@@ -5,7 +5,7 @@ export class CreateCableDto {
   @ApiPropertyOptional() @IsOptional() @IsUUID() business_id?: string;
   @ApiProperty() @IsString() code: string;
   @ApiProperty() @IsString() name: string;
-  @ApiProperty() @IsString() type: string;
+  @ApiPropertyOptional() @IsOptional() @IsString() type?: string;
   @ApiPropertyOptional() @IsOptional() @IsNumber() cross_section?: number;
   @ApiPropertyOptional() @IsOptional() @IsString() material?: string;
   @ApiPropertyOptional() @IsOptional() @IsNumber() length_meters?: number;

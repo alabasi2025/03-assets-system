@@ -5,7 +5,7 @@ export class CreateMeterDto {
   @ApiPropertyOptional() @IsOptional() @IsUUID() business_id?: string;
   @ApiProperty() @IsString() code: string;
   @ApiPropertyOptional() @IsOptional() @IsString() serial_number?: string;
-  @ApiProperty() @IsString() type: string;
+  @ApiPropertyOptional() @IsOptional() @IsString() type?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() manufacturer?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() model?: string;
   @ApiPropertyOptional() @IsOptional() @IsNumber() capacity_amp?: number;

@@ -83,7 +83,7 @@ export class GeneratorFormComponent implements OnInit {
     const formValue = this.form.value;
     const data: any = { code: formValue.code, name: formValue.name, status: formValue.status };
     if (formValue.station_id) data.station_id = formValue.station_id;
-    if (formValue.type) data.type = formValue.type;
+
     if (formValue.manufacturer) data.manufacturer = formValue.manufacturer;
     if (formValue.model) data.model = formValue.model;
     if (formValue.capacity_kw) data.capacity_kw = formValue.capacity_kw;
