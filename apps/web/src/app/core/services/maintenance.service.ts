@@ -146,4 +146,8 @@ export class MaintenanceService {
   getWorkOrderStatistics(businessId: string): Observable<ApiResponse<WorkOrderStatistics>> {
     return this.api.get<ApiResponse<WorkOrderStatistics>>(`${this.workOrdersEndpoint}/statistics/${businessId}`);
   }
+
+  updateWorkOrderStatus(id: string, status: string): Observable<ApiResponse<WorkOrder>> {
+    return this.api.put<ApiResponse<WorkOrder>>(`${this.workOrdersEndpoint}/${id}`, { status });
+  }
 }
