@@ -34,12 +34,16 @@ import { environment } from '../../../../environments/environment';
     <p-confirmDialog></p-confirmDialog>
     
     <div class="page-container animate-fade-in">
-      <!-- Page Header -->
-      <div class="page-header">
+      <!-- زر الإضافة في أقصى اليسار -->
+      <div class="flex justify-start mb-4">
         <a routerLink="/maintenance-plans/new" class="btn-add-success">
           <i class="pi pi-calendar-plus"></i>
           <span>إضافة خطة صيانة</span>
         </a>
+      </div>
+      
+      <!-- Page Header -->
+      <div class="page-header">
         <div>
           <h2>خطط الصيانة الوقائية</h2>
           <p>إدارة جداول الصيانة الدورية للأصول</p>

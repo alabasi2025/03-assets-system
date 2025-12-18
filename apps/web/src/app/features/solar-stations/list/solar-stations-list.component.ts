@@ -24,15 +24,18 @@ import { SolarStationsService, SolarStation } from '../../../core/services/solar
     <p-confirmDialog></p-confirmDialog>
     
     <div class="p-4">
-      <div class="flex justify-between items-center mb-4">
+      <!-- زر الإضافة في أقصى اليسار -->
+      <div class="flex justify-start mb-4">
         <a routerLink="/solar-stations/new" class="btn-add-success">
           <i class="pi pi-sun"></i>
           <span>إضافة محطة شمسية</span>
         </a>
-        <div class="text-right">
-          <h2 class="text-2xl font-bold text-gray-800">إدارة محطات الطاقة الشمسية</h2>
-          <p class="text-gray-600">عرض وإدارة محطات الطاقة الشمسية والألواح والعاكسات</p>
-        </div>
+      </div>
+      
+      <!-- العنوان في اليمين -->
+      <div class="text-right mb-4">
+        <h2 class="text-2xl font-bold text-gray-800">إدارة محطات الطاقة الشمسية</h2>
+        <p class="text-gray-600">عرض وإدارة محطات الطاقة الشمسية والألواح والعاكسات</p>
       </div>
 
       <!-- Stats Cards -->
